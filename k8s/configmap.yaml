@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-omada
+data:
+  omada-url: https://replace-me
+  omada-username: replace-me
+  upstream-dns: 8.8.8.8 # replace this if you want
+  omada-disable-https-verification: false
+  Corefile: |
+    . {
+        health :8080
+        omada {
+            controller_url {$OMADA_URL}
+            username {$OMADA_USERNAME}
+            password {$OMADA_PASSWORD}
+        }
+        forward . {$UPSTREAM_DNS}
+    }
+

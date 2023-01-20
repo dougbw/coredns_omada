@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: coredns-omada
 resources:
   - ns.yaml
-  - config.yaml
+  - configmap.yaml
+  - secret.yaml
   - deploy.yaml
   - service.yaml

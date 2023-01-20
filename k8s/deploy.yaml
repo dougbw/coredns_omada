@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: coredns-omada
-  replicas: 2
+  replicas: 3
   template:
     metadata:
       labels:
@@ -16,11 +16,55 @@ spec:
       volumes:
         - name: corefile
           configMap:
-            name: corefile
+            name: coredns-omada
       containers:
         - name: coredns
-          image: dougbw1/coredns-omada:latest
+          image: dougbw1/coredns-omada:1.0.0 # {"$imagepolicy": "flux-system:coredns-omada"}
           args: ["-conf", "/etc/coredns/Corefile"]
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 5
+          env:
+          - name: UPSTREAM_DNS
+            valueFrom:
+              configMapKeyRef:
+                name: coredns-omada
+                key: upstream-dns
+          - name: OMADA_URL
+            valueFrom:
+              configMapKeyRef:
+                name: coredns-omada
+                key: omada-url
+          - name: OMADA_DISABLE_HTTPS_VERIFICATION
+            valueFrom:
+              configMapKeyRef:
+                name: coredns-omada
+                key: omada-disable-https-verification
+          - name: OMADA_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: coredns-omada
+                key: omada-username
+          - name: OMADA_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: coredns-omada
+                key: omada-password
           ports:
             - name: dns
               containerPort: 53
@@ -29,6 +73,7 @@ spec:
               containerPort: 53
               protocol: TCP
           volumeMounts:
-            - mountPath: /etc/coredns
+            - mountPath: /etc/coredns/Corefile
+              subPath: Corefile
               readOnly: true
               name: corefile

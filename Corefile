@@ -1,0 +1,12 @@
+. {
+    log
+    debug
+    health :8080
+    omada {
+        controller_url {$OMADA_URL}
+        username {$OMADA_USERNAME}
+        password {$OMADA_PASSWORD}
+        refresh_minutes 1
+    }
+    forward . {$DNS_FORWARD}
+}

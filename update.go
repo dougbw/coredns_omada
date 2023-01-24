@@ -84,12 +84,13 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	log.Info("update: updating zones...")
 	zones := make(map[string]*file.Zone)
 
-	// get networks
 	networks := o.controller.GetNetworks()
 
-	// get clients
 	clients := o.controller.GetClients()
 	log.Debugf("update: found '%d' omada clients\n", len(clients))
+
+	devices := o.controller.GetDevices()
+	log.Debugf("update: found '%d' omada devices\n", len(devices))
 
 	for _, network := range networks {
 
@@ -111,7 +112,6 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		}
 
 		// add client records to zone
-
 		// todo: if o.config.resolve_client_names...
 		log.Debugf("update: adding records to zone: %s\n", dnsDomain)
 		_, subnet, _ := net.ParseCIDR(network.Subnet)
@@ -126,6 +126,18 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				zones[dnsDomain].Insert(a)
 			}
 		}
+
+		// add device records to zone
+		for _, device := range devices {
+			ip := net.ParseIP(device.IP)
+			if subnet.Contains(ip) {
+				deviceFqdn := fmt.Sprintf("%s.%s", device.DnsName, dnsDomain)
+				a := &dns.A{Hdr: dns.RR_Header{Name: deviceFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
+					A: net.ParseIP(device.IP)}
+				zones[dnsDomain].Insert(a)
+			}
+		}
+
 		log.Debugf("update: zone %s contains %d records", dnsDomain, zones[dnsDomain].Count)
 
 	}

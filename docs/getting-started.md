@@ -12,6 +12,7 @@ CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](bui
 * Go to Admin > Add New Admin
 * Choose "Local User"
 * Role: "Viewer"
+* Site Privileges: "All" or select the individual site
 * Make a note of the username and password
 
 ## 2 - Run CoreDNS with omada plugin
@@ -32,6 +33,7 @@ docker run \
 --expose=53 --expose=53/udp -p 53:53 -p 53:53/udp \
 -v "$PWD"/Corefile:/etc/coredns/Corefile \
 --env OMADA_URL="<OMADA_URL>" \
+--env OMADA_SITE="<OMADA_SITE>" \
 --env OMADA_USERNAME="<OMADA_USERNAME>" \
 --env OMADA_PASSWORD="<OMADA_PASSWORD>" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
@@ -45,6 +47,7 @@ Some example manifest files to get started are in the [k8s](k8s) directory. Make
 
 * configmap.yaml
   * `omada-url`
+  * `omada-site`
   * `omada-username`
   * `upstream-dns`
   * Note: if you do not have a valid https certification on your controller then set `omada-disable-https-verification` to `true`

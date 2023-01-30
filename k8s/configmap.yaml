@@ -4,6 +4,7 @@ metadata:
   name: coredns-omada
 data:
   omada-url: https://replace-me
+  omada-site: replace-me
   omada-username: replace-me
   upstream-dns: 8.8.8.8 # replace this if you want
   omada-disable-https-verification: false
@@ -12,6 +13,7 @@ data:
         health :8080
         omada {
             controller_url {$OMADA_URL}
+            site {$OMADA_SITE}
             username {$OMADA_USERNAME}
             password {$OMADA_PASSWORD}
         }

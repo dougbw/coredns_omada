@@ -50,6 +50,11 @@ spec:
               configMapKeyRef:
                 name: coredns-omada
                 key: omada-url
+          - name: OMADA_SITE
+            valueFrom:
+              configMapKeyRef:
+                name: coredns-omada
+                key: omada-site
           - name: OMADA_DISABLE_HTTPS_VERIFICATION
             valueFrom:
               configMapKeyRef:

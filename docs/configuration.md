@@ -4,13 +4,14 @@ CoreDNS is configured using a configuration file called a [Corefile](https://cor
 
 ## omada plugin configuration
 
-| Name            | Required | Type   | Notes                                                      |
-| ------------------- | -------- | ------ | ---------------------------------------------------------- |
-| controller_url      | ✅       | string | address of the Omada controller. Include `https://` prefix |
-| username            | ✅       | string | Omada controller username                                  |
-| password            | ✅       | string | Omada controller password                                  |
-| refresh_minutes     | ❌       | int    | how often to refresh the zones (default 1 minute)          |
-| refresh_login_hours | ❌       | int    | how often to refresh the login token (default 24 hours)    |
+| Name                | Required | Type   | Notes                                                                    |
+| ------------------- | -------- | ------ | ------------------------------------------------------------------------ |
+| controller_url      | ✅       | string | address of the Omada controller. Include `https://` prefix               |
+| site                | ✅       | string | name of the site from the Omada controller (note this is case sensitive) |
+| username            | ✅       | string | Omada controller username                                                |
+| password            | ✅       | string | Omada controller password                                                |
+| refresh_minutes     | ❌       | int    | how often to refresh the zones (default 1 minute)                        |
+| refresh_login_hours | ❌       | int    | how often to refresh the login token (default 24 hours)                  |
 
 ## Credentials
 
@@ -43,8 +44,8 @@ See [Corefile](../Corefile)
 
 ### Enable debug logging
 
-* `debug` will enable debug logging which will include debug logs from the omada plugin
-* `log` will enable query/response logging for queries which are forwarded to the upstream dns server
+- `debug` will enable debug logging which will include debug logs from the omada plugin
+- `log` will enable query/response logging for queries which are forwarded to the upstream dns server
 
 ```
 . {

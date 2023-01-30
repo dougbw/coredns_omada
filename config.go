@@ -9,6 +9,7 @@ import (
 
 type config struct {
 	controller_url string
+	site           string
 	username       string
 	password       string
 
@@ -47,6 +48,12 @@ func parse(c *caddy.Controller) (config config, err error) {
 					return config, c.ArgErr()
 				}
 				config.controller_url = c.Val()
+
+			case "site":
+				if !c.NextArg() {
+					return config, c.ArgErr()
+				}
+				config.site = c.Val()
 
 			case "username":
 				if !c.NextArg() {

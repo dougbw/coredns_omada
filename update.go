@@ -69,8 +69,9 @@ func (o *Omada) login(ctx context.Context) error {
 	log.Info("logging in...")
 	u := o.config.username
 	p := o.config.password
+	s := o.config.site
 
-	err := o.controller.Login(u, p)
+	err := o.controller.Login(u, p, s)
 	if err != nil {
 		return err
 	}

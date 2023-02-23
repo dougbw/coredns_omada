@@ -45,13 +45,20 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	qtype := state.QType()
 	log.Debugf("query; type: %d, name: %s\n", qtype, qname)
 
-	// this plugin can only handle A queries
-	if qtype != 1 {
+	// this plugin can only handle 'A' and 'PTR' queries
+	var qzone string
+	switch qtype {
+	case 1: // A
+		qzone = qname
+	case 12: // PTR
+		qzone = getPtrParent(qname)
+	default:
 		return plugin.NextOrFailure(o.Name(), o.Next, ctx, w, r)
 	}
 
 	// check zone
-	zoneName := plugin.Zones(o.zoneNames).Matches(qname)
+	log.Debugf("checking if zone is managed: %s", qzone)
+	zoneName := plugin.Zones(o.zoneNames).Matches(qzone)
 	if zoneName == "" {
 		log.Debugf("-- ❌ query is not in managed zones: %s\n", qname)
 		return plugin.NextOrFailure(o.Name(), o.Next, ctx, w, r)

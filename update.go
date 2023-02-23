@@ -93,6 +93,37 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	devices := o.controller.GetDevices()
 	log.Debugf("update: found '%d' omada devices\n", len(devices))
 
+	// reverse zones
+	for _, network := range networks {
+		dnsDomain := network.Domain
+		_, subnet, _ := net.ParseCIDR(network.Subnet)
+		for _, client := range clients {
+			// get PTR zone
+			ptrZone := getParentPtrZoneFromIp(client.Ip)
+			// create PTR zone
+			_, ok := zones[ptrZone]
+			if !ok {
+				log.Debugf("update ptr: creating PTR zone: %s", ptrZone)
+				zones[ptrZone] = file.NewZone(ptrZone, "")
+				addSoaRecord(zones[ptrZone], ptrZone)
+			}
+
+			// if client is in this networks subnet then we can determine the fqdn
+			// and create ptr record
+			ip := net.ParseIP(client.Ip)
+			if subnet.Contains(ip) {
+				ptrName := getPtrZoneFromIp(client.Ip)
+				ptrRecord := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
+				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
+					Ptr: dns.Fqdn(ptrRecord)}
+				log.Debugf("update ptr: -- adding record to zone: %s, %s", ptrRecord, ptrZone)
+				zones[ptrZone].Insert(ptr)
+			}
+		}
+
+	}
+
+	// forward zones
 	for _, network := range networks {
 
 		log.Debugf("update: -- processing network: %s", network.Name)

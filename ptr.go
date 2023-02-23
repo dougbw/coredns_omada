@@ -1,7 +1,6 @@
 package coredns_omada
 
 import (
-	"fmt"
 	"net"
 	"strings"
 )
@@ -38,16 +37,4 @@ func reverseSlice(s []string) []string {
 		s[i], s[j] = s[j], s[i]
 	}
 	return s
-}
-
-func getParentPtrZoneFromIp2(ipStr string) (string, error) {
-	ip := net.ParseIP(ipStr)
-	if ip == nil {
-		return "", fmt.Errorf("invalid IP address: %s", ipStr)
-	}
-	octets := strings.Split(ip.String(), ".")
-	zoneOctets := octets[:3]
-	reverse := strings.Join(reverseSlice(zoneOctets), ".")
-	zone := reverse + ".in-addr.arpa."
-	return zone, nil
 }

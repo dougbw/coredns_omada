@@ -13,6 +13,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dougbw/go-omada v0.2.0 h1:9aSmA1Ujns2EcOOo11Z1a13POOn3rbbJgA/ODB0h92I=
 github.com/dougbw/go-omada v0.2.0/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
+github.com/dougbw/go-omada v0.3.0 h1:Htzv8JWz1hK/im87kFe+vxEpxSSoghLVfKn/ull/en0=
+github.com/dougbw/go-omada v0.3.0/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
+github.com/dougbw/go-omada v0.3.1 h1:xo6L32luj5FMieN1JRMt4pxcs4XVlHjJ7Ni48UrqkOs=
+github.com/dougbw/go-omada v0.3.1/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 h1:BHsljHzVlRcyQhjrss6TZTdY2VfCqZPbv5k3iBFa2ZQ=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568/go.mod h1:xEzjJPgXI435gkrCt3MPfRiAkVrwSbHsst4LCFVfpJc=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=

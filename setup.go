@@ -49,8 +49,6 @@ func setup(c *caddy.Controller) error {
 	fmt.Printf("delay: %d\n", delay)
 
 	// start update loop
-	refresh := time.Duration(o.config.refresh_minutes) * time.Minute
-	fmt.Printf("refresh: %d\n", refresh)
 	if err := o.updateLoop(ctx); err != nil {
 		cancel()
 		return plugin.Error("omada", err)

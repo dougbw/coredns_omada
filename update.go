@@ -57,7 +57,7 @@ func updateSessionLoop(ctx context.Context, o *Omada) {
 			return
 		case <-timer.C:
 			if err := o.login(ctx); err != nil && ctx.Err() == nil {
-				log.Errorf("failed to login to controller : %v", err)
+				log.Errorf("Failed to login to controller : %v", err)
 			}
 		}
 	}
@@ -85,12 +85,21 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	log.Info("update: updating zones...")
 	zones := make(map[string]*file.Zone)
 
-	networks := o.controller.GetNetworks()
+	networks, err := o.controller.GetNetworks()
+	if err != nil {
+		return fmt.Errorf("error getting networks from omada controller: %w", err)
+	}
 
-	clients := o.controller.GetClients()
+	clients, err := o.controller.GetClients()
+	if err != nil {
+		return fmt.Errorf("error getting clients from omada controller: %w", err)
+	}
 	log.Debugf("update: found '%d' omada clients\n", len(clients))
 
-	devices := o.controller.GetDevices()
+	devices, err := o.controller.GetDevices()
+	if err != nil {
+		return fmt.Errorf("error getting devices from omada controller: %w", err)
+	}
 	log.Debugf("update: found '%d' omada devices\n", len(devices))
 
 	// reverse zones

@@ -34,6 +34,7 @@ See [Corefile](../Corefile)
     health :8080
     omada {
         controller_url {$OMADA_URL}
+        site {$OMADA_SITE}
         username {$OMADA_USERNAME}
         password {$OMADA_PASSWORD}
         refresh_minutes 1
@@ -54,6 +55,7 @@ See [Corefile](../Corefile)
     health :8080
     omada {
         controller_url {$OMADA_URL}
+        site {$OMADA_SITE}
         username {$OMADA_USERNAME}
         password {$OMADA_PASSWORD}
         refresh_minutes 1

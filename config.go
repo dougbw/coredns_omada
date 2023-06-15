@@ -1,17 +1,17 @@
 package coredns_omada
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/coredns/caddy"
+	"github.com/go-playground/validator/v10"
 )
 
 type config struct {
-	controller_url string
-	site           string
-	username       string
-	password       string
+	Controller_url string `validate:"required,url"`
+	Site           string `validate:"required"`
+	Username       string `validate:"required"`
+	Password       string `validate:"required"`
 
 	refresh_minutes           int  // update dns zones every x minutes
 	refresh_login_hours       int  // login and get a new session token every x hours
@@ -47,25 +47,25 @@ func parse(c *caddy.Controller) (config config, err error) {
 				if !c.NextArg() {
 					return config, c.ArgErr()
 				}
-				config.controller_url = c.Val()
+				config.Controller_url = c.Val()
 
 			case "site":
 				if !c.NextArg() {
 					return config, c.ArgErr()
 				}
-				config.site = c.Val()
+				config.Site = c.Val()
 
 			case "username":
 				if !c.NextArg() {
 					return config, c.ArgErr()
 				}
-				config.username = c.Val()
+				config.Username = c.Val()
 
 			case "password":
 				if !c.NextArg() {
 					return config, c.ArgErr()
 				}
-				config.password = c.Val()
+				config.Password = c.Val()
 
 			case "refresh_minutes":
 				if !c.NextArg() {
@@ -111,7 +111,12 @@ func parse(c *caddy.Controller) (config config, err error) {
 
 	}
 
-	fmt.Println(config)
+	validate := validator.New()
+	if err := validate.Struct(config); err != nil {
+		log.Info("There is a Corefile configuration error:")
+		return config, err
+	}
+
 	return config, nil
 
 }

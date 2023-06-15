@@ -22,9 +22,9 @@ func setup(c *caddy.Controller) error {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 
-	url := config.controller_url
-	u := config.username
-	p := config.password
+	url := config.Controller_url
+	u := config.Username
+	p := config.Password
 
 	o, err := NewOmada(ctx, url, u, p)
 	if err != nil {

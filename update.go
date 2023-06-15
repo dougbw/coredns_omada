@@ -67,9 +67,9 @@ func updateSessionLoop(ctx context.Context, o *Omada) {
 func (o *Omada) login(ctx context.Context) error {
 
 	log.Info("logging in...")
-	u := o.config.username
-	p := o.config.password
-	s := o.config.site
+	u := o.config.Username
+	p := o.config.Password
+	s := o.config.Site
 
 	err := o.controller.Login(u, p, s)
 	if err != nil {

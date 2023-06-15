@@ -2,7 +2,7 @@
 # docker buildx build --platform linux/amd64,linux/arm64 -t coredns-omada --load
 #
 # push command:
-# docker buildx build --platform linux/amd64,linux/arm64 -t dougbw1/coredns-omada:1.3.0 -t dougbw1/coredns-omada:latest --push .
+# docker buildx build --platform linux/amd64,linux/arm64 -t dougbw1/coredns-omada:1.3.1 -t dougbw1/coredns-omada:latest --push .
 #
 # How to setup multi platform builder:
 # docker buildx create --name multiplatform
@@ -12,7 +12,7 @@
 FROM --platform=$BUILDPLATFORM golang:1.19.4-bullseye as builder
 ARG TARGETOS TARGETARCH
 RUN apt update
-RUN apt install git curl jq
+RUN apt install git curl jq -y
 COPY . /coredns_omada
 WORKDIR /
 

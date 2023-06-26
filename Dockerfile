@@ -1,3 +1,24 @@
+##
+##
+##       STOP and read
+##
+##
+## This file needs to be copied into the driectory one level 
+## above this coredns_omada directory
+## This will set the correct context for the docker build command.
+##
+## That parent directory, which will contain this Dockerfile, also 
+## needs to contain the collowing directories:
+## 1. coredns  (does not need to be built ... make will be called on this below)
+## 2. go-omada 
+## 3. coredns_omada (this folder/project)
+##
+## This dockerfile is for local development and modification 
+## of the go-omada and coredna packages.
+## If you want to build coredns-omada using unmodified code 
+## from the repositories then get the unchanged dockerfile from github.
+
+
 # build command: 
 # docker buildx build --platform linux/amd64,linux/arm64 -t coredns-omada --load
 #
@@ -13,15 +34,17 @@ FROM --platform=$BUILDPLATFORM golang:1.19.4-bullseye as builder
 ARG TARGETOS TARGETARCH
 RUN apt update
 RUN apt install git curl jq -y
-COPY . /coredns_omada
 WORKDIR /
+COPY ./coredns_omada /coredns_omada
+COPY ./coredns /coredns
+COPY ./go-omada /go-omada
 
 # clone latest coredns release
-RUN /coredns_omada/scripts/clone-coredns.sh
+#RUN /coredns_omada/scripts/clone-coredns.sh
 
 # insert plugin config
-RUN sed -i '1s#^#omada:github.com/dougbw/coredns_omada\n#' /coredns/plugin.cfg
-RUN echo "replace github.com/dougbw/coredns_omada => /coredns_omada" >> /coredns/go.mod
+#RUN sed -i '1s#^#omada:github.com/dougbw/coredns_omada\n#' /coredns/plugin.cfg
+#RUN echo "replace github.com/dougbw/coredns_omada => /coredns_omada" >> /coredns/go.mod
 
 # compile coredns
 WORKDIR /coredns

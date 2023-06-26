@@ -85,30 +85,57 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	log.Info("update: updating zones...")
 	zones := make(map[string]*file.Zone)
 
-	networks, err := o.controller.GetNetworks()
+	networks, err := o.controller.GetAllNetworks()
 	if err != nil {
-		return fmt.Errorf("error getting networks from omada controller: %w", err)
+		return fmt.Errorf("updateZones: error GetAllNetworks from omada controller: %w", err)
 	}
+	log.Debugf("updateZones: GetAllNetworks found '%d' omada networks\n", len(networks))
 
-	clients, err := o.controller.GetClients()
+	clients, err := o.controller.GetAllClients()
 	if err != nil {
-		return fmt.Errorf("error getting clients from omada controller: %w", err)
+		return fmt.Errorf("updateZones: error calling GetAllClients from omada controller: %w", err)
 	}
-	log.Debugf("update: found '%d' omada clients\n", len(clients))
+	log.Debugf("updateZones: GetAllClients found '%d' omada clients\n", len(clients))
 
-	devices, err := o.controller.GetDevices()
+	devices, err := o.controller.GetAllDevices()
 	if err != nil {
-		return fmt.Errorf("error getting devices from omada controller: %w", err)
+		return fmt.Errorf("updateZones: error calling GetAllDevices from omada controller: %w", err)
 	}
-	log.Debugf("update: found '%d' omada devices\n", len(devices))
+	log.Debugf("updateZones: GetAllDevices found '%d' omada devices\n", len(devices))
+
+	log.Debugf("******************** START CLIENT LIST **************************\n")
+	for _, client := range clients {
+		log.Debugf("Name: %s, DNS name: %s, Hostname: %s, IP: %s, MAC: %s\n", client.Name, client.DnsName, client.HostName, client.Ip, client.MAC)
+	}
+	log.Debugf("******************** END CLIENT LIST **************************\n")
+
+	log.Debugf("******************** ================ **************************\n")
+
+	log.Debugf("******************** START DEVICES LIST **************************\n")
+	for _, device := range devices {
+		log.Debugf("Name: %s, DNS name: %s, Model: %s, IP: %s, MAC: %s, Site: %s\n", device.Name, device.DnsName, device.Model, device.IP, device.Mac, device.Site)
+	}
+	log.Debugf("******************** END DEVICES LIST **************************\n")
+
+	log.Debugf("******************** ================ **************************\n")
+
+	log.Debugf("******************** START NETWORK LIST **************************\n")
+
+	for _, network := range networks {
+		log.Debugf("Domain: %s, ID: %s, Name: %s, Subnet: %s\n", network.Domain, network.Id, network.Name, network.Subnet)
+	}
+	log.Debugf("******************** END NETWORK LIST **************************\n")
 
 	// reverse zones
+	log.Debugf("******************** CREATE ZONES **************************\n")
 	for _, network := range networks {
 		dnsDomain := network.Domain
 		_, subnet, _ := net.ParseCIDR(network.Subnet)
+		log.Debugf("ParseCIDR subnet found: %s\n", subnet)
 		for _, client := range clients {
 			// get PTR zone
 			ptrZone := getParentPtrZoneFromIp(client.Ip)
+			log.Debugf("parentPtrZoneFromIp: %s for IP: %s\n", ptrZone, client.Ip)
 			// create PTR zone
 			_, ok := zones[ptrZone]
 			if !ok {

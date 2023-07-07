@@ -17,6 +17,14 @@ github.com/dougbw/go-omada v0.3.0 h1:Htzv8JWz1hK/im87kFe+vxEpxSSoghLVfKn/ull/en0
 github.com/dougbw/go-omada v0.3.0/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
 github.com/dougbw/go-omada v0.3.1 h1:xo6L32luj5FMieN1JRMt4pxcs4XVlHjJ7Ni48UrqkOs=
 github.com/dougbw/go-omada v0.3.1/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
+github.com/dougbw/go-omada v0.3.2-0.20230707201853-7b9b66460e19 h1:0lXEHm6eetyH38wBpBv2ZxWNzOFnSwy7NnyNhAuPytU=
+github.com/dougbw/go-omada v0.3.2-0.20230707201853-7b9b66460e19/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
+github.com/dougbw/go-omada v0.3.2-0.20230707203201-8715a8e0bd50 h1:jx9GOPOPDRlXOSlHZ9gkrmxmuufhIwoyvTQbfg9gd8A=
+github.com/dougbw/go-omada v0.3.2-0.20230707203201-8715a8e0bd50/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
+github.com/dougbw/go-omada v0.3.2-0.20230707203400-8b4afe2a15e4 h1:9RAwfL6ARjpG+aj/7bUvzWzpKjLXC8f1zzQm/r6ZfWk=
+github.com/dougbw/go-omada v0.3.2-0.20230707203400-8b4afe2a15e4/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
+github.com/dougbw/go-omada v0.3.2-0.20230707203751-fed6afc666c5 h1:9AiEnMHdpe/oKIV+aW8g2vYULbu2WZ3AIHI/1eKs2+o=
+github.com/dougbw/go-omada v0.3.2-0.20230707203751-fed6afc666c5/go.mod h1:Ia6D6xEl99ISvPfHY4uALEYmiqEwpd0uzbIQ82VjiQE=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 h1:BHsljHzVlRcyQhjrss6TZTdY2VfCqZPbv5k3iBFa2ZQ=
 github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568/go.mod h1:xEzjJPgXI435gkrCt3MPfRiAkVrwSbHsst4LCFVfpJc=
 github.com/gabriel-vasile/mimetype v1.4.2 h1:w5qFW6JKBz9Y393Y4q372O9A7cUSequkh1Q7OhCmWKU=

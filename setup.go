@@ -39,6 +39,17 @@ func setup(c *caddy.Controller) error {
 		return plugin.Error("omada", err)
 	}
 
+	// setup site list
+	var sites []string
+	for s := range o.controller.Sites {
+		sites = append(sites, s)
+	}
+	sites = filterSites(config.Site, sites)
+	log.Info("sites: length=%d", len(sites))
+	for _, s := range sites {
+		log.Info("site: %s", s)
+	}
+
 	// initial zone update
 	if err := o.updateZones(ctx); err != nil {
 		cancel()

@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/coredns/caddy v1.1.1
 	github.com/coredns/coredns v1.10.0
-	github.com/dougbw/go-omada v0.3.1
+	github.com/dougbw/go-omada v0.3.2-0.20230707203751-fed6afc666c5
 	github.com/miekg/dns v1.1.50
 )
 

@@ -7,7 +7,7 @@ CoreDNS is configured using a configuration file called a [Corefile](https://cor
 | Name                | Required | Type   | Notes                                                                    |
 | ------------------- | -------- | ------ | ------------------------------------------------------------------------ |
 | controller_url      | ✅       | string | address of the Omada controller. Include `https://` prefix               |
-| site                | ✅       | string | name of the site from the Omada controller (note this is case sensitive) |
+| site                | ✅       | string | name of the site from the Omada controller (note this is a regex pattern) |
 | username            | ✅       | string | Omada controller username                                                |
 | password            | ✅       | string | Omada controller password                                                |
 | refresh_minutes     | ❌       | int    | how often to refresh the zones (default 1 minute)                        |
@@ -16,6 +16,10 @@ CoreDNS is configured using a configuration file called a [Corefile](https://cor
 ## Credentials
 
 For this service you should create a new user in the `Admin` page of the controller with a `Viewer` role.
+
+## Omada Site
+
+A single Omada controller can support multiple network sites. This plugin can be configured to use multiple sites via the `site` configuration property (regex). Multiple sites can be specified using the `|` seperator like this `SiteA|SiteB|SiteC` or all sites can be selected by setting it to `.*`
 
 ## HTTPS Verification
 

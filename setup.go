@@ -45,10 +45,8 @@ func setup(c *caddy.Controller) error {
 		sites = append(sites, s)
 	}
 	sites = filterSites(config.Site, sites)
-	log.Info("sites: length=%d", len(sites))
-	for _, s := range sites {
-		log.Info("site: %s", s)
-	}
+	log.Infof("found '%d' sites: %v", len(sites), sites)
+	o.sites = sites
 
 	// initial zone update
 	if err := o.updateZones(ctx); err != nil {

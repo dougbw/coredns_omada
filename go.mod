@@ -5,7 +5,8 @@ go 1.19
 require (
 	github.com/coredns/caddy v1.1.1
 	github.com/coredns/coredns v1.10.0
-	github.com/dougbw/go-omada v0.3.2-0.20230707203751-fed6afc666c5
+	github.com/dougbw/go-omada v0.4.0
+	github.com/go-playground/validator/v10 v10.14.1
 	github.com/miekg/dns v1.1.50
 )
 
@@ -17,7 +18,6 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.14.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
@@ -27,7 +27,6 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.39.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
-	github.com/stretchr/testify v1.8.2 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/net v0.8.0 // indirect

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/coredns/coredns/plugin/file"
+	omada "github.com/dougbw/go-omada"
 	"github.com/miekg/dns"
 )
 
@@ -69,9 +70,8 @@ func (o *Omada) login(ctx context.Context) error {
 	log.Info("logging in...")
 	u := o.config.Username
 	p := o.config.Password
-	s := o.config.Site
 
-	err := o.controller.Login(u, p, s)
+	err := o.controller.Login(u, p)
 	if err != nil {
 		return err
 	}
@@ -85,20 +85,38 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	log.Info("update: updating zones...")
 	zones := make(map[string]*file.Zone)
 
-	networks, err := o.controller.GetNetworks()
-	if err != nil {
-		return fmt.Errorf("error getting networks from omada controller: %w", err)
+	var networks []omada.OmadaNetwork
+	for _, s := range o.sites {
+		log.Debugf("update: getting networks for site: %s", s)
+		o.controller.SetSite(s)
+		n, err := o.controller.GetNetworks()
+		if err != nil {
+			return fmt.Errorf("error getting networks from omada controller: %w", err)
+		}
+		networks = append(networks, n...)
 	}
 
-	clients, err := o.controller.GetClients()
-	if err != nil {
-		return fmt.Errorf("error getting clients from omada controller: %w", err)
+	var clients []omada.Client
+	for _, s := range o.sites {
+		log.Debugf("update: getting clients for site: %s", s)
+		o.controller.SetSite(s)
+		c, err := o.controller.GetClients()
+		if err != nil {
+			return fmt.Errorf("error getting clients from omada controller: %w", err)
+		}
+		clients = append(clients, c...)
 	}
 	log.Debugf("update: found '%d' omada clients\n", len(clients))
 
-	devices, err := o.controller.GetDevices()
-	if err != nil {
-		return fmt.Errorf("error getting devices from omada controller: %w", err)
+	var devices []omada.Device
+	for _, s := range o.sites {
+		log.Debugf("update: getting devices for site: %s", s)
+		o.controller.SetSite(s)
+		d, err := o.controller.GetDevices()
+		if err != nil {
+			return fmt.Errorf("error getting devices from omada controller: %w", err)
+		}
+		devices = append(devices, d...)
 	}
 	log.Debugf("update: found '%d' omada devices\n", len(devices))
 

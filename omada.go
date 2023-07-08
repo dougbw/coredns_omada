@@ -16,6 +16,7 @@ import (
 type Omada struct {
 	config     config
 	controller omada.Controller
+	sites      []string
 	zoneNames  []string
 	zones      map[string]*file.Zone
 	zMu        sync.RWMutex

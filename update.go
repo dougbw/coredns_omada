@@ -138,6 +138,9 @@ func (o *Omada) updateZones(ctx context.Context) error {
 			// if client is in this networks subnet then we can determine the fqdn
 			// and create ptr record
 			ip := net.ParseIP(client.Ip)
+			if ip == nil {
+				continue
+			}
 			if subnet.Contains(ip) {
 				ptrName := getPtrZoneFromIp(client.Ip)
 				ptrRecord := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
@@ -178,6 +181,9 @@ func (o *Omada) updateZones(ctx context.Context) error {
 
 			// if client is in this networks subnet then add record to zone
 			ip := net.ParseIP(client.Ip)
+			if ip == nil {
+				continue
+			}
 			if subnet.Contains(ip) {
 				clientFqdn := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: clientFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},

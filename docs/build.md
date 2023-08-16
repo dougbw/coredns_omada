@@ -11,7 +11,7 @@ user@pc:/repos$ tree
 ├── coredns
 └── coredns_omada
 ```
-* in `coredns/plugin.cfg` add the following line to the START of the file:
+* in `coredns/plugin.cfg` add the following line directly above the `forward:forward` entry:
     ```omada:github.com/dougbw/coredns_omada```
 * (optional for local development only): in `coredns/go.mod` add the following line to the END of the file. The following example assumes you have the `coredns_omada` repo located at `/repos/coredns_omada` so this needs to match your system.
 ```

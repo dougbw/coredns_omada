@@ -6,3 +6,11 @@ coredns_omada is a [CoreDNS plugin](https://coredns.io/manual/plugins/) which re
 * [Configuration](docs/configuration.md)
 * [Building coredns omada](docs/build.md)
 * [Solution design](docs/solution-design.md)
+
+
+# Version chart
+
+| Omada Controller version  | coredns_omada version |
+| --------                  | -------               |
+| `5.12`                    | `v1.4.3`              |
+| `5.9`                     | `v1.4.2`              |

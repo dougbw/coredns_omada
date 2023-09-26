@@ -2,7 +2,7 @@
 # docker buildx build --platform linux/amd64,linux/arm64 -t coredns-omada --load
 #
 # push command:
-# docker buildx build --platform linux/amd64,linux/arm64 -t dougbw1/coredns-omada:1.4.1 -t dougbw1/coredns-omada:latest --push .
+# docker buildx build --platform linux/amd64,linux/arm64 -t dougbw1/coredns-omada:1.4.3 -t dougbw1/coredns-omada:latest --push .
 #
 # How to setup multi platform builder:
 # docker buildx create --name multiplatform

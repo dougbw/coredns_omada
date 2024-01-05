@@ -19,7 +19,7 @@ For this service you should create a new user in the `Admin` page of the control
 
 ## Omada Site
 
-A single Omada controller can support multiple network sites. This plugin can be configured to use multiple sites via the `site` configuration property (regex). Multiple sites can be specified using the `|` seperator like this `SiteA|SiteB|SiteC` or all sites can be selected by setting it to `.*`
+A single Omada controller can support multiple network sites. This plugin can be configured to use multiple sites via the `site` configuration property (regex). Multiple sites can be specified using the `|` separator like this `SiteA|SiteB|SiteC` or all sites can be selected by setting it to `.*`
 
 ## HTTPS Verification
 

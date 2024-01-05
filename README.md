@@ -7,10 +7,14 @@ coredns_omada is a [CoreDNS plugin](https://coredns.io/manual/plugins/) which re
 * [Building coredns omada](docs/build.md)
 * [Solution design](docs/solution-design.md)
 
+# Pre-built docker images
+
+Docker container images are now being published to the [GitHub Container Registry](https://github.com/dougbw/coredns_omada/pkgs/container/corends_omada) under the following name:
+ `ghcr.io/dougbw/corends_omada`
 
 # Version chart
 
 | Omada Controller version  | coredns_omada version |
 | --------                  | -------               |
-| `5.12.x`                    | `v1.4.3`              |
-| `5.9.x`                     | `v1.4.2`              |
+| `5.12.x`                  | `v1.4.3`              |
+| `5.9.x`                   | `v1.4.2`              |

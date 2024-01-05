@@ -15,7 +15,7 @@ docker run \
 --env OMADA_PASSWORD="<OMADA_PASSWORD>" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
 --env UPSTREAM_DNS="8.8.8.8" \
-dougbw1/coredns-omada:1.0.0 -conf /etc/coredns/Corefile
+ghcr.io/dougbw/corends_omada:latest -conf /etc/coredns/Corefile
 ```
 
 1. Install `Docker` from the Synology Package Center
@@ -28,7 +28,7 @@ dougbw1/coredns-omada:1.0.0 -conf /etc/coredns/Corefile
 
 3. Open the Docker management console (select it from installed packages in the Package Center) and go to the `Registry` tab.  
 	 - Search for the keyword `coredns-omada`
-	 - There should be one result that links to https://registry.hub.docker.com/r/dougbw1/coredns-omada/
+	 - There should be one result that links to https://registry.hub.docker.com/r/ghcr.io/dougbw/corends_omada/
 	 - Double click that Image to install and choose `Tag` = `Latest` when prompted. 
 	 - The coredns-omada image should now be available on the Image tab of the Docker management console.
 

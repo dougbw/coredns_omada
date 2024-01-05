@@ -38,7 +38,7 @@ docker run \
 --env OMADA_PASSWORD="<OMADA_PASSWORD>" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
 --env UPSTREAM_DNS="8.8.8.8" \
-ghcr.io/dougbw/corends_omada:latest -conf /etc/coredns/Corefile
+ghcr.io/dougbw/coredns_omada:latest -conf /etc/coredns/Corefile
 ```
 Note: If you do not have a valid https certificate on your controller then set `OMADA_DISABLE_HTTPS_VERIFICATION` to true
 

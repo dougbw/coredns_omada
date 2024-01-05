@@ -1,6 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-
-name: Docker Builds
+name: Release
 
 # Controls when the workflow will run
 on:
@@ -50,7 +48,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ghcr.io/dougbw/corends_omada
+            ghcr.io/dougbw/coredns_omada
           # generate Docker tags based on the following events/attributes
           tags: |
             type=schedule

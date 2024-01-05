@@ -20,7 +20,7 @@ ghcr.io/dougbw/corends_omada:latest -conf /etc/coredns/Corefile
 
 1. Install `Docker` from the Synology Package Center
 
-2. Open Fle Station in DSM. \
+2. Open File Station in DSM. \
     You will see a share called `docker` that was created when the Docker plugin was installed.\
     Under that `docker` share, create a folder called `coredns-omada` and upload or create a `Corefile` (as described elsewhere in the documentation for coredns-omada, no modicifation to the file is necessary for Synology installs).
 

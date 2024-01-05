@@ -14,7 +14,7 @@ Docker container images are now being published to the [GitHub Container Registr
 
 # Version chart
 
-| Omada Controller version  | coredns_omada version |
+| Omada Controller version  | Reccomended coredns_omada version |
 | --------                  | -------               |
-| `5.12.x`                  | `v1.4.3`              |
+| `5.12.x`                  | `v1.5.0` or newer     |
 | `5.9.x`                   | `v1.4.2`              |

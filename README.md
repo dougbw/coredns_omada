@@ -9,7 +9,7 @@ coredns_omada is a [CoreDNS plugin](https://coredns.io/manual/plugins/) which re
 
 # Pre-built docker images
 
-Docker container images are now being published to the [GitHub Container Registry](https://github.com/dougbw/coredns_omada/pkgs/container/corends_omada) under the following name:
+Docker container images are now being published to the [GitHub Container Registry](https://github.com/dougbw/coredns_omada/pkgs/container/coredns_omada) under the following name:
  `ghcr.io/dougbw/coredns_omada`
 
 # Version chart

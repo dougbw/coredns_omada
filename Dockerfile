@@ -40,6 +40,7 @@ RUN export DEBCONF_NONINTERACTIVE_SEEN=true \
 FROM --platform=$TARGETPLATFORM scratch
 COPY --from=certificates /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /coredns/coredns /coredns
-COPY Corefile /Corefile
+COPY Corefile /default-Corefile
 EXPOSE 53 53/udp
 ENTRYPOINT ["/coredns"]
+CMD ["-conf", "/default-Corefile"]

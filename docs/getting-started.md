@@ -20,6 +20,9 @@ CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](bui
 2. `Domain Name` must be set (e.g `omada.home`)
 3. `DNS Server` set to `Manual` and enter the IP address of your CoreDNS application.
 
+<img src="omada-network-setup.png"  width="75%">
+
+
 ## 3 - Run CoreDNS with omada plugin
 
 This guide provides three alternatives on how to run CoreDNS:
@@ -91,7 +94,3 @@ Some example manifest files to get started are in the [k8s](k8s) directory. Make
   * Note: if you do not have a valid https certification on your controller then set `omada-disable-https-verification` to `true`
 * secret.yaml
   * `omada-password`
-
-
-
-<img src="omada-network-setup.png"  width="75%">

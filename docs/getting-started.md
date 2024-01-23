@@ -24,21 +24,19 @@ CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](bui
 
 ### docker
 
-- requires a `Corefile` in the current directory
-- set the url/username/password accordingly
+- set the url/site/username/password accordingly
 
 ```
 docker run \
---rm -it -m 128m \
+--rm -it \
 --expose=53 --expose=53/udp -p 53:53 -p 53:53/udp \
--v "$PWD"/Corefile:/etc/coredns/Corefile \
 --env OMADA_URL="<OMADA_URL>" \
 --env OMADA_SITE="<OMADA_SITE>" \
 --env OMADA_USERNAME="<OMADA_USERNAME>" \
 --env OMADA_PASSWORD="<OMADA_PASSWORD>" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
 --env UPSTREAM_DNS="8.8.8.8" \
-ghcr.io/dougbw/coredns_omada:latest -conf /etc/coredns/Corefile
+ghcr.io/dougbw/coredns_omada:latest
 ```
 Note: If you do not have a valid https certificate on your controller then set `OMADA_DISABLE_HTTPS_VERIFICATION` to true
 

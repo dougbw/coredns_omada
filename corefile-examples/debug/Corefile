@@ -1,0 +1,13 @@
+. {
+    log
+    debug
+    health :8080
+    omada {
+        controller_url https://10.0.0.2
+        site Home
+        username coredns-omada
+        password coredns-omada
+        refresh_minutes 1
+    }
+    forward . 10.0.0.1
+}

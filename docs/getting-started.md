@@ -15,34 +15,75 @@ CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](bui
 * Site Privileges: "All" or select the individual site
 * Make a note of the username and password
 
-## 2 - Run CoreDNS with omada plugin
+## 2 - Setup network
+1. From the Omada controller go to Settings -> Wired Networks -> LAN and choose your network(s):
+2. `Domain Name` must be set (e.g `omada.home`)
+3. `DNS Server` set to `Manual` and enter the IP address of your CoreDNS application.
 
-### coredns binary
+<img src="omada-network-setup.png"  width="75%">
+
+
+## 3 - Run CoreDNS with omada plugin
+
+This guide provides three alternatives on how to run CoreDNS:
+
+- [CoreDNS binary](#coredns-binary)
+- [Docker container](#docker)
+- [Kubernetes](#kubernetes)
+
+### CoreDNS binary
+
+To build the CoreDNS binary with the `omada` plugin follow the steps provided [here](./build.md). Once built setup you `Corefile` and then run `coredns`.
+
+Example:
 ```
 ./coredns -conf ./Corefile
 ```
+Note: If you do not have a valid https certificate on your controller then set the `OMADA_DISABLE_HTTPS_VERIFICATION` environment variable to true
 
-### docker
+### Docker
 
-- requires a `Corefile` in the current directory
-- set the url/username/password accordingly
+- Use the pre-built images or build your own
+- Pre-built images are published [here](https://github.com/dougbw/coredns_omada/pkgs/container/coredns_omada)
+- The pre-built images contain a default corefile which *requires* the following environment variables to be set:
+* `OMADA_URL`
+* `OMADA_SITE`
+* `OMADA_USERNAME`
+* `OMADA_PASSWORD`
+* `UPSTREAM_DNS`
 
+Note: If you do not have a valid https certificate on your controller then set the `OMADA_DISABLE_HTTPS_VERIFICATION` environment variable to true
+
+Example docker run command:
 ```
 docker run \
---rm -it -m 128m \
+--rm -it \
 --expose=53 --expose=53/udp -p 53:53 -p 53:53/udp \
--v "$PWD"/Corefile:/etc/coredns/Corefile \
 --env OMADA_URL="<OMADA_URL>" \
 --env OMADA_SITE="<OMADA_SITE>" \
 --env OMADA_USERNAME="<OMADA_USERNAME>" \
 --env OMADA_PASSWORD="<OMADA_PASSWORD>" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
 --env UPSTREAM_DNS="8.8.8.8" \
-ghcr.io/dougbw/coredns_omada:latest -conf /etc/coredns/Corefile
+ghcr.io/dougbw/coredns_omada:latest
 ```
-Note: If you do not have a valid https certificate on your controller then set `OMADA_DISABLE_HTTPS_VERIFICATION` to true
 
-### k8s:
+To use a custom Corefile mount the file as a volume and add the `-conf /Corefile` command:
+```
+docker run \
+--rm -it \
+--expose=53 --expose=53/udp -p 53:53 -p 53:53/udp \
+--env OMADA_URL="<OMADA_URL>" \
+--env OMADA_SITE="<OMADA_SITE>" \
+--env OMADA_USERNAME="<OMADA_USERNAME>" \
+--env OMADA_PASSWORD="<OMADA_PASSWORD>" \
+--env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
+--env UPSTREAM_DNS="8.8.8.8" \
+-v "$PWD"/Corefile:/Corefile \
+ghcr.io/dougbw/coredns_omada:latest -conf /Corefile
+```
+
+### Kubernetes
 Some example manifest files to get started are in the [k8s](k8s) directory. Make sure you replace the following values:
 
 * configmap.yaml
@@ -53,10 +94,3 @@ Some example manifest files to get started are in the [k8s](k8s) directory. Make
   * Note: if you do not have a valid https certification on your controller then set `omada-disable-https-verification` to `true`
 * secret.yaml
   * `omada-password`
-
-## 3 - Setup network
-1. From the Omada controller go to Settings -> Wired Networks -> LAN and choose your network(s):
-2. `Domain Name` must be set (e.g `omada.home`)
-3. `DNS Server` set to `Manual` and enter the IP address of your CoreDNS instance
-
-<img src="omada-network-setup.png"  width="75%">

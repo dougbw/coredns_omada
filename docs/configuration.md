@@ -2,7 +2,9 @@
 
 CoreDNS is configured using a configuration file called a [Corefile](https://coredns.io/2017/07/23/corefile-explained/) which supports [variable substitution](https://coredns.io/manual/configuration/#environment-variables) so values can be provided using environment variables.
 
-## omada plugin configuration
+
+
+## Omada plugin configuration
 
 | Name                | Required | Type   | Notes                                                                    |
 | ------------------- | -------- | ------ | ------------------------------------------------------------------------ |
@@ -31,39 +33,4 @@ An option to keep HTTPS verification enabled is to create a public DNS A record 
 
 ## Corefile example
 
-See [Corefile](../Corefile)
-
-```
-. {
-    health :8080
-    omada {
-        controller_url {$OMADA_URL}
-        site {$OMADA_SITE}
-        username {$OMADA_USERNAME}
-        password {$OMADA_PASSWORD}
-        refresh_minutes 1
-    }
-    forward . {$UPSTREAM_DNS}
-}
-```
-
-### Enable debug logging
-
-- `debug` will enable debug logging which will include debug logs from the omada plugin
-- `log` will enable query/response logging for queries which are forwarded to the upstream dns server
-
-```
-. {
-    log
-    debug
-    health :8080
-    omada {
-        controller_url {$OMADA_URL}
-        site {$OMADA_SITE}
-        username {$OMADA_USERNAME}
-        password {$OMADA_PASSWORD}
-        refresh_minutes 1
-    }
-    forward . {$UPSTREAM_DNS}
-}
-```
+Example corefiles are located [here](../corefile-examples)

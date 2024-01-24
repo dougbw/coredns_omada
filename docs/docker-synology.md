@@ -8,14 +8,13 @@ To do that, we need fit all the components of this Docker run command into the r
 docker run \
 --rm -it -m 128m \
 --expose=53 --expose=53/udp -p 53:53 -p 53:53/udp \
--v "$PWD"/Corefile:/etc/coredns/Corefile \
 --env OMADA_URL="<OMADA_URL>" \
 --env OMADA_SITE="<OMADA_SITE>" \
 --env OMADA_USERNAME="<OMADA_USERNAME>" \
 --env OMADA_PASSWORD="<OMADA_PASSWORD>" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
 --env UPSTREAM_DNS="8.8.8.8" \
-ghcr.io/dougbw/coredns_omada:latest -conf /etc/coredns/Corefile
+ghcr.io/dougbw/coredns_omada:latest
 ```
 
 1. Install `Docker` from the Synology Package Center

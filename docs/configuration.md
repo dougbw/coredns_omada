@@ -2,9 +2,10 @@
 
 CoreDNS is configured using a configuration file called a [Corefile](https://coredns.io/2017/07/23/corefile-explained/) which supports [variable substitution](https://coredns.io/manual/configuration/#environment-variables) so values can be provided using environment variables.
 
+## Corefile examples
+Example corefiles are located [here](../corefile-examples)
 
-
-## Omada plugin configuration
+## Omada plugin configuration syntax
 
 | Name                | Required | Type   | Notes                                                                    |
 | ------------------- | -------- | ------ | ------------------------------------------------------------------------ |
@@ -31,6 +32,3 @@ HTTPS verification can be disabled by setting environment variable `OMADA_DISABL
 
 An option to keep HTTPS verification enabled is to create a public DNS A record pointing to your controllers private IP address.
 
-## Corefile example
-
-Example corefiles are located [here](../corefile-examples)

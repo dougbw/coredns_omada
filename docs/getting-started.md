@@ -68,19 +68,15 @@ docker run \
 ghcr.io/dougbw/coredns_omada:latest
 ```
 
-To use a custom Corefile mount the file as a volume and add the `-conf /Corefile` command:
+To use a custom Corefile mount the file as a volume to `\Corefile` and supply any required environment variables:
+
 ```
 docker run \
 --rm -it \
 --expose=53 --expose=53/udp -p 53:53 -p 53:53/udp \
---env OMADA_URL="<OMADA_URL>" \
---env OMADA_SITE="<OMADA_SITE>" \
---env OMADA_USERNAME="<OMADA_USERNAME>" \
---env OMADA_PASSWORD="<OMADA_PASSWORD>" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
---env UPSTREAM_DNS="8.8.8.8" \
--v "$PWD"/Corefile:/Corefile \
-ghcr.io/dougbw/coredns_omada:latest -conf /Corefile
+-v "${PWD}/Corefile":/Corefile \
+ghcr.io/dougbw/coredns_omada:latest
 ```
 
 ### Kubernetes

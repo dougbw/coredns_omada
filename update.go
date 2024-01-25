@@ -150,6 +150,32 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				zones[ptrZone].Insert(ptr)
 			}
 		}
+		for _, device := range devices {
+			// get PTR zone
+			ptrZone := getParentPtrZoneFromIp(device.IP)
+			// create PTR zone
+			_, ok := zones[ptrZone]
+			if !ok {
+				log.Debugf("update ptr: creating PTR zone: %s", ptrZone)
+				zones[ptrZone] = file.NewZone(ptrZone, "")
+				addSoaRecord(zones[ptrZone], ptrZone)
+			}
+
+			// if device is in this networks subnet then we can determine the fqdn
+			// and create ptr record
+			ip := net.ParseIP(device.IP)
+			if ip == nil {
+				continue
+			}
+			if subnet.Contains(ip) {
+				ptrName := getPtrZoneFromIp(device.IP)
+				ptrRecord := fmt.Sprintf("%s.%s", device.DnsName, dnsDomain)
+				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
+					Ptr: dns.Fqdn(ptrRecord)}
+				log.Debugf("update ptr: -- adding record to zone: %s, %s", ptrRecord, ptrZone)
+				zones[ptrZone].Insert(ptr)
+			}
+		}
 
 	}
 

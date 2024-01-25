@@ -2,8 +2,6 @@ package coredns_omada
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
@@ -53,9 +51,6 @@ func setup(c *caddy.Controller) error {
 		cancel()
 		return plugin.Error("omada", err)
 	}
-
-	delay := 5 * time.Minute
-	fmt.Printf("delay: %d\n", delay)
 
 	// start update loop
 	if err := o.updateLoop(ctx); err != nil {

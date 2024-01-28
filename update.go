@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"regexp"
 	"time"
 
 	"github.com/coredns/coredns/plugin/file"
@@ -93,7 +94,8 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("error getting networks from omada controller: %w", err)
 		}
-		networks = append(networks, n...)
+		interfaces := getInterfaces(n)
+		networks = append(networks, interfaces...)
 	}
 
 	var clients []omada.Client
@@ -123,7 +125,11 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	// reverse zones
 	for _, network := range networks {
 		dnsDomain := network.Domain
-		_, subnet, _ := net.ParseCIDR(network.Subnet)
+		_, subnet, err := net.ParseCIDR(network.Subnet)
+		if err != nil {
+			log.Debugf("failed to parse network cidr: %v", err)
+			continue
+		}
 		for _, client := range clients {
 			// get PTR zone
 			ptrZone := getParentPtrZoneFromIp(client.Ip)
@@ -245,4 +251,14 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	o.zMu.Unlock()
 
 	return nil
+}
+
+func getInterfaces(networks []omada.OmadaNetwork) (ret []omada.OmadaNetwork) {
+	for _, network := range networks {
+		match, _ := regexp.MatchString("interface", network.Purpose)
+		if match {
+			ret = append(ret, network)
+		}
+	}
+	return
 }

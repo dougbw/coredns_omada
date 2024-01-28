@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/coredns/caddy v1.1.1
 	github.com/coredns/coredns v1.11.1
-	github.com/dougbw/go-omada v0.5.0
+	github.com/dougbw/go-omada v0.5.2
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/miekg/dns v1.1.57
 )

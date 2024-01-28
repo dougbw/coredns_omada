@@ -91,10 +91,10 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		log.Debugf("update: getting networks for site: %s", s)
 		o.controller.SetSite(s)
 		n, err := o.controller.GetNetworks()
-		interfaces := getInterfaces(n)
 		if err != nil {
 			return fmt.Errorf("error getting networks from omada controller: %w", err)
 		}
+		interfaces := getInterfaces(n)
 		networks = append(networks, interfaces...)
 	}
 

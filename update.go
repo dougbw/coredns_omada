@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"regexp"
 	"time"
 
 	"github.com/coredns/coredns/plugin/file"
@@ -90,10 +91,12 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		log.Debugf("update: getting networks for site: %s", s)
 		o.controller.SetSite(s)
 		n, err := o.controller.GetNetworks()
+		interfaces := getInterfaces(n)
+		log.Infof("networks: %d, interfaces: %d", len(n), len(interfaces))
 		if err != nil {
 			return fmt.Errorf("error getting networks from omada controller: %w", err)
 		}
-		networks = append(networks, n...)
+		networks = append(networks, interfaces...)
 	}
 
 	var clients []omada.Client
@@ -245,4 +248,14 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	o.zMu.Unlock()
 
 	return nil
+}
+
+func getInterfaces(networks []omada.OmadaNetwork) (ret []omada.OmadaNetwork) {
+	for _, network := range networks {
+		match, _ := regexp.MatchString("interface", network.Purpose)
+		if match {
+			ret = append(ret, network)
+		}
+	}
+	return
 }

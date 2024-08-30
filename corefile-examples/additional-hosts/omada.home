@@ -1,0 +1,13 @@
+$TTL    60
+$ORIGIN omada.home.
+
+@                       IN      SOA     ns1.omada.home. admin.omada.home. (
+                2024082900      ; serial
+                7200            ; refresh (2 hours)
+                3600            ; retry (1 hour)
+                1209600         ; expire (2 weeks)
+                3600            ; minimum (1 hour)
+                )
+
+name.omada.home.    IN  CNAME   existing.omada.home.
+

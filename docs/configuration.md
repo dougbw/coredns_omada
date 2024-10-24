@@ -2,7 +2,10 @@
 
 CoreDNS is configured using a configuration file called a [Corefile](https://coredns.io/2017/07/23/corefile-explained/) which supports [variable substitution](https://coredns.io/manual/configuration/#environment-variables) so values can be provided using environment variables.
 
-## omada plugin configuration
+## Corefile examples
+Example corefiles are located [here](../corefile-examples)
+
+## Omada plugin configuration syntax
 
 | Name                | Required | Type   | Notes                                                                    |
 | ------------------- | -------- | ------ | ------------------------------------------------------------------------ |
@@ -19,7 +22,7 @@ For this service you should create a new user in the `Admin` page of the control
 
 ## Omada Site
 
-A single Omada controller can support multiple network sites. This plugin can be configured to use multiple sites via the `site` configuration property (regex). Multiple sites can be specified using the `|` seperator like this `SiteA|SiteB|SiteC` or all sites can be selected by setting it to `.*`
+A single Omada controller can support multiple network sites. This plugin can be configured to use multiple sites via the `site` configuration property (regex). Multiple sites can be specified using the `|` separator like this `SiteA|SiteB|SiteC` or all sites can be selected by setting it to `.*`
 
 ## HTTPS Verification
 
@@ -29,41 +32,3 @@ HTTPS verification can be disabled by setting environment variable `OMADA_DISABL
 
 An option to keep HTTPS verification enabled is to create a public DNS A record pointing to your controllers private IP address.
 
-## Corefile example
-
-See [Corefile](../Corefile)
-
-```
-. {
-    health :8080
-    omada {
-        controller_url {$OMADA_URL}
-        site {$OMADA_SITE}
-        username {$OMADA_USERNAME}
-        password {$OMADA_PASSWORD}
-        refresh_minutes 1
-    }
-    forward . {$UPSTREAM_DNS}
-}
-```
-
-### Enable debug logging
-
-- `debug` will enable debug logging which will include debug logs from the omada plugin
-- `log` will enable query/response logging for queries which are forwarded to the upstream dns server
-
-```
-. {
-    log
-    debug
-    health :8080
-    omada {
-        controller_url {$OMADA_URL}
-        site {$OMADA_SITE}
-        username {$OMADA_USERNAME}
-        password {$OMADA_PASSWORD}
-        refresh_minutes 1
-    }
-    forward . {$UPSTREAM_DNS}
-}
-```

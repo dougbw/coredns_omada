@@ -2,14 +2,14 @@
 # docker buildx build --platform linux/amd64,linux/arm64 -t coredns-omada --load
 #
 # push command:
-# docker buildx build --platform linux/amd64,linux/arm64 -t dougbw1/coredns-omada:1.3.1 -t dougbw1/coredns-omada:latest --push .
+# docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/dougbw/coredns_omada:1.4.3 -t ghcr.io/dougbw/coredns_omada:latest --push .
 #
 # How to setup multi platform builder:
 # docker buildx create --name multiplatform
 # docker buildx use multiplatform
 # docker buildx inspect --bootstrap
 
-FROM --platform=$BUILDPLATFORM golang:1.19.4-bullseye as builder
+FROM --platform=$BUILDPLATFORM golang:1.21-bookworm as builder
 ARG TARGETOS TARGETARCH
 RUN apt update
 RUN apt install git curl jq -y
@@ -20,7 +20,7 @@ WORKDIR /
 RUN /coredns_omada/scripts/clone-coredns.sh
 
 # insert plugin config
-RUN sed -i '1s#^#omada:github.com/dougbw/coredns_omada\n#' /coredns/plugin.cfg
+RUN sed -i '/^route53:route53$/i omada:github.com/dougbw/coredns_omada' /coredns/plugin.cfg
 RUN echo "replace github.com/dougbw/coredns_omada => /coredns_omada" >> /coredns/go.mod
 
 # compile coredns
@@ -40,5 +40,6 @@ RUN export DEBCONF_NONINTERACTIVE_SEEN=true \
 FROM --platform=$TARGETPLATFORM scratch
 COPY --from=certificates /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /coredns/coredns /coredns
+COPY Corefile /Corefile
 EXPOSE 53 53/udp
 ENTRYPOINT ["/coredns"]

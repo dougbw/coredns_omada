@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"regexp"
 	"time"
 
 	"github.com/coredns/coredns/plugin/file"
@@ -94,7 +95,8 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("error getting networks from omada controller: %w", err)
 		}
-		networks = append(networks, n...)
+		interfaces := getInterfaces(n)
+		networks = append(networks, interfaces...)
 	}
 
 	//
@@ -138,7 +140,11 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	// reverse zones
 	for _, network := range networks {
 		dnsDomain := network.Domain
-		_, subnet, _ := net.ParseCIDR(network.Subnet)
+		_, subnet, err := net.ParseCIDR(network.Subnet)
+		if err != nil {
+			log.Debugf("failed to parse network cidr: %v", err)
+			continue
+		}
 		for _, client := range clients {
 			// get PTR zone
 			ptrZone := getParentPtrZoneFromIp(client.Ip)
@@ -153,9 +159,38 @@ func (o *Omada) updateZones(ctx context.Context) error {
 			// if client is in this networks subnet then we can determine the fqdn
 			// and create ptr record
 			ip := net.ParseIP(client.Ip)
+			if ip == nil {
+				continue
+			}
 			if subnet.Contains(ip) {
 				ptrName := getPtrZoneFromIp(client.Ip)
 				ptrRecord := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
+				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
+					Ptr: dns.Fqdn(ptrRecord)}
+				log.Debugf("update ptr: -- adding record to zone: %s, %s", ptrRecord, ptrZone)
+				zones[ptrZone].Insert(ptr)
+			}
+		}
+		for _, device := range devices {
+			// get PTR zone
+			ptrZone := getParentPtrZoneFromIp(device.IP)
+			// create PTR zone
+			_, ok := zones[ptrZone]
+			if !ok {
+				log.Debugf("update ptr: creating PTR zone: %s", ptrZone)
+				zones[ptrZone] = file.NewZone(ptrZone, "")
+				addSoaRecord(zones[ptrZone], ptrZone)
+			}
+
+			// if device is in this networks subnet then we can determine the fqdn
+			// and create ptr record
+			ip := net.ParseIP(device.IP)
+			if ip == nil {
+				continue
+			}
+			if subnet.Contains(ip) {
+				ptrName := getPtrZoneFromIp(device.IP)
+				ptrRecord := fmt.Sprintf("%s.%s", device.DnsName, dnsDomain)
 				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
 					Ptr: dns.Fqdn(ptrRecord)}
 				log.Debugf("update ptr: -- adding record to zone: %s, %s", ptrRecord, ptrZone)
@@ -193,6 +228,9 @@ func (o *Omada) updateZones(ctx context.Context) error {
 
 			// if client is in this networks subnet then add record to zone
 			ip := net.ParseIP(client.Ip)
+			if ip == nil {
+				continue
+			}
 			if subnet.Contains(ip) {
 				clientFqdn := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: clientFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
@@ -241,4 +279,14 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	o.zMu.Unlock()
 
 	return nil
+}
+
+func getInterfaces(networks []omada.OmadaNetwork) (ret []omada.OmadaNetwork) {
+	for _, network := range networks {
+		match, _ := regexp.MatchString("interface", network.Purpose)
+		if match {
+			ret = append(ret, network)
+		}
+	}
+	return
 }

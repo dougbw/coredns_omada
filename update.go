@@ -220,7 +220,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				if client.Name == client.MAC && client.HostName != "--" {
 					dnsName = client.HostName
 				}
-				clientFqdn := fmt.Sprintf("%s.%s", dnsName, dnsDomain)
+				clientFqdn := fmt.Sprintf("%s.%s", makeDNSSafe(dnsName), dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: clientFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 					A: net.ParseIP(client.Ip)}
 				records[dnsDomain].ARecords[clientFqdn] = ARecord{
@@ -242,7 +242,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		for _, device := range devices {
 			ip := net.ParseIP(device.IP)
 			if subnet.Contains(ip) {
-				deviceFqdn := fmt.Sprintf("%s.%s", device.DnsName, dnsDomain)
+				deviceFqdn := fmt.Sprintf("%s.%s", makeDNSSafe(device.DnsName), dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: deviceFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 					A: net.ParseIP(device.IP)}
 				records[dnsDomain].ARecords[deviceFqdn] = ARecord{
@@ -272,7 +272,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				if reservation.ClientName == reservation.Mac && reservation.Description != "" {
 					dnsName = reservation.Description
 				}
-				reservationFqdn := fmt.Sprintf("%s.%s", dnsName, dnsDomain)
+				reservationFqdn := fmt.Sprintf("%s.%s", makeDNSSafe(dnsName), dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: reservationFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 					A: net.ParseIP(reservation.IP)}
 				records[dnsDomain].ARecords[reservationFqdn] = ARecord{

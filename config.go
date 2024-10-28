@@ -31,12 +31,7 @@ func parse(c *caddy.Controller) (config config, err error) {
 	config.refresh_login_hours = 24
 	config.resolve_clients = true
 	config.resolve_devices = true
-	config.resolve_dhcp_reservations = false
-
-	// not yet implemented...
-	// config.overwrite_client_names = false
-	// config.overwrite_device_names = false
-	// config.overwrite_dhcp_reservations = false
+	config.resolve_dhcp_reservations = true
 
 	for c.Next() {
 

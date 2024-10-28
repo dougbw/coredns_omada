@@ -251,7 +251,11 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				continue
 			}
 			if subnet.Contains(ip) {
-				clientFqdn := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
+				dnsName := client.Name
+				if client.Name == client.MAC && client.HostName != "--" {
+					dnsName = client.HostName
+				}
+				clientFqdn := fmt.Sprintf("%s.%s", dnsName, dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: clientFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 					A: net.ParseIP(client.Ip)}
 				records[dnsDomain].ARecords[clientFqdn] = ARecord{

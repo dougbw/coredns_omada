@@ -7,14 +7,18 @@ Example corefiles are located [here](../corefile-examples)
 
 ## Omada plugin configuration syntax
 
-| Name                | Required | Type   | Notes                                                                    |
-| ------------------- | -------- | ------ | ------------------------------------------------------------------------ |
-| controller_url      | ✅       | string | address of the Omada controller. Include `https://` prefix               |
-| site                | ✅       | string | name of the site from the Omada controller (note this is a regex pattern) |
-| username            | ✅       | string | Omada controller username                                                |
-| password            | ✅       | string | Omada controller password                                                |
-| refresh_minutes     | ❌       | int    | how often to refresh the zones (default 1 minute)                        |
-| refresh_login_hours | ❌       | int    | how often to refresh the login token (default 24 hours)                  |
+| Name                      | Required | Type     | Notes                                                                                                                                                        |
+|---------------------------|----------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| controller_url            | ✅        | string   | address of the Omada controller. Include `https://` prefix                                                                                                   |
+| site                      | ✅        | string   | name of the site from the Omada controller (note this is a regex pattern)                                                                                    |
+| username                  | ✅        | string   | Omada controller username                                                                                                                                    |
+| password                  | ✅        | string   | Omada controller password                                                                                                                                    |
+| refresh_minutes           | ❌        | int      | How often to refresh the zones (default 1 minute)                                                                                                            |
+| refresh_login_hours       | ❌        | int      | How often to refresh the login token (default 24 hours)                                                                                                      |
+| resolve_clients           | ❌        | bool     | Whether to resolve client (default true) addresses                                                                                                                          |
+| resolve_devices           | ❌        | bool     | Whether to resolve device (default true)addresses                                                                                                                          |
+| resolve_dhcp_reservations | ❌        | bool     | Whether to resolve device (default true)addresses                                                                                                                          |
+| stale_record_duration     | ❌        | duration | How long to keep serving stale records for clients/devices which are no longer present in the Omada controller. Specified in Go time [duration](https://pkg.go.dev/time#ParseDuration) format |
 
 ## Credentials
 

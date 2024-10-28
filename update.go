@@ -47,7 +47,6 @@ func updateZoneLoop(ctx context.Context, o *Omada) {
 
 func updateSessionLoop(ctx context.Context, o *Omada) {
 
-	// delay := 24 * time.Hour
 	delay := time.Duration(o.config.refresh_login_hours) * time.Hour
 	timer := time.NewTimer(delay)
 	defer timer.Stop()
@@ -80,14 +79,49 @@ func (o *Omada) login(ctx context.Context) error {
 	return nil
 }
 
+type ARecord struct {
+	record    *dns.A
+	timestamp time.Time
+}
+
+type PtrRecord struct {
+	record    *dns.PTR
+	timestamp time.Time
+}
+
+type DnsRecords struct {
+	ARecords   map[string]ARecord
+	PtrRecords map[string]PtrRecord
+}
+
+func (d *DnsRecords) purgeStaleRecords(maxAge int) {
+	now := time.Now()
+	for k, v := range d.ARecords {
+		diff := now.Sub(v.timestamp)
+		if diff.Seconds() > float64(maxAge) {
+			delete(d.ARecords, k)
+		}
+	}
+	for k, v := range d.PtrRecords {
+		diff := now.Sub(v.timestamp)
+		if diff.Seconds() > float64(maxAge) {
+			delete(d.ARecords, k)
+		}
+	}
+}
+
 // update dns zones
 func (o *Omada) updateZones(ctx context.Context) error {
 
 	log.Info("update: updating zones...")
-	zones := make(map[string]*file.Zone)
 
 	var networks []omada.OmadaNetwork
+	var clients []omada.Client
+	var devices []omada.Device
+	var reservations []omada.DhcpReservation
 	for _, s := range o.sites {
+		o.controller.SetSite(s)
+
 		log.Debugf("update: getting networks for site: %s", s)
 		o.controller.SetSite(s)
 		n, err := o.controller.GetNetworks()
@@ -96,98 +130,58 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		}
 		interfaces := getInterfaces(n)
 		networks = append(networks, interfaces...)
-	}
 
-	var clients []omada.Client
-	for _, s := range o.sites {
-		log.Debugf("update: getting clients for site: %s", s)
-		o.controller.SetSite(s)
-		c, err := o.controller.GetClients()
-		if err != nil {
-			return fmt.Errorf("error getting clients from omada controller: %w", err)
+		if o.config.resolve_clients {
+			log.Debugf("update: getting clients for site: %s", s)
+			c, err := o.controller.GetClients()
+			if err != nil {
+				return fmt.Errorf("error getting clients from omada controller: %w", err)
+			}
+			clients = append(clients, c...)
 		}
-		clients = append(clients, c...)
-	}
-	log.Debugf("update: found '%d' omada clients\n", len(clients))
 
-	var devices []omada.Device
-	for _, s := range o.sites {
-		log.Debugf("update: getting devices for site: %s", s)
-		o.controller.SetSite(s)
-		d, err := o.controller.GetDevices()
-		if err != nil {
-			return fmt.Errorf("error getting devices from omada controller: %w", err)
+		if o.config.resolve_devices {
+			log.Debugf("update: getting devices for site: %s", s)
+			d, err := o.controller.GetDevices()
+			if err != nil {
+				return fmt.Errorf("error getting devices from omada controller: %w", err)
+			}
+			devices = append(devices, d...)
 		}
-		devices = append(devices, d...)
-	}
-	log.Debugf("update: found '%d' omada devices\n", len(devices))
 
-	// reverse zones
+		if o.config.resolve_dhcp_reservations {
+			log.Debugf("update: getting dhcp reservations for site: %s", s)
+			r, err := o.controller.GetDhcpReservations()
+			if err != nil {
+				return fmt.Errorf("error getting dhcp reservations from omada controller: %w", err)
+			}
+			reservations = append(reservations, r...)
+		}
+	}
+	if o.config.resolve_clients {
+		log.Debugf("update: found '%d' clients\n", len(clients))
+	}
+
+	if o.config.resolve_devices {
+		log.Debugf("update: found '%d' devices\n", len(devices))
+	}
+
+	if o.config.resolve_dhcp_reservations {
+		log.Debugf("update: found '%d' reservations\n", len(reservations))
+	}
+
+	records := o.records
+	ptrZone := "in-addr.arpa."
+	_, ok := records[ptrZone]
+	if !ok {
+		records[ptrZone] = DnsRecords{
+			ARecords:   make(map[string]ARecord),
+			PtrRecords: make(map[string]PtrRecord),
+		}
+	}
+
+	timestamp := time.Now()
 	for _, network := range networks {
-		dnsDomain := network.Domain
-		_, subnet, err := net.ParseCIDR(network.Subnet)
-		if err != nil {
-			log.Debugf("failed to parse network cidr: %v", err)
-			continue
-		}
-		for _, client := range clients {
-			// get PTR zone
-			ptrZone := getParentPtrZoneFromIp(client.Ip)
-			// create PTR zone
-			_, ok := zones[ptrZone]
-			if !ok {
-				log.Debugf("update ptr: creating PTR zone: %s", ptrZone)
-				zones[ptrZone] = file.NewZone(ptrZone, "")
-				addSoaRecord(zones[ptrZone], ptrZone)
-			}
-
-			// if client is in this networks subnet then we can determine the fqdn
-			// and create ptr record
-			ip := net.ParseIP(client.Ip)
-			if ip == nil {
-				continue
-			}
-			if subnet.Contains(ip) {
-				ptrName := getPtrZoneFromIp(client.Ip)
-				ptrRecord := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
-				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
-					Ptr: dns.Fqdn(ptrRecord)}
-				log.Debugf("update ptr: -- adding record to zone: %s, %s", ptrRecord, ptrZone)
-				zones[ptrZone].Insert(ptr)
-			}
-		}
-		for _, device := range devices {
-			// get PTR zone
-			ptrZone := getParentPtrZoneFromIp(device.IP)
-			// create PTR zone
-			_, ok := zones[ptrZone]
-			if !ok {
-				log.Debugf("update ptr: creating PTR zone: %s", ptrZone)
-				zones[ptrZone] = file.NewZone(ptrZone, "")
-				addSoaRecord(zones[ptrZone], ptrZone)
-			}
-
-			// if device is in this networks subnet then we can determine the fqdn
-			// and create ptr record
-			ip := net.ParseIP(device.IP)
-			if ip == nil {
-				continue
-			}
-			if subnet.Contains(ip) {
-				ptrName := getPtrZoneFromIp(device.IP)
-				ptrRecord := fmt.Sprintf("%s.%s", device.DnsName, dnsDomain)
-				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
-					Ptr: dns.Fqdn(ptrRecord)}
-				log.Debugf("update ptr: -- adding record to zone: %s, %s", ptrRecord, ptrZone)
-				zones[ptrZone].Insert(ptr)
-			}
-		}
-
-	}
-
-	// forward zones
-	for _, network := range networks {
-
 		log.Debugf("update: -- processing network: %s", network.Name)
 
 		// skip network if no dns search domain is set
@@ -197,18 +191,23 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		}
 		dnsDomain := network.Domain + "."
 
-		// create zone
-		_, ok := zones[dnsDomain]
+		// create record map
+		_, ok := records[dnsDomain]
 		if !ok {
-			log.Debugf("update: creating zone: %s", dnsDomain)
-			zones[dnsDomain] = file.NewZone(dnsDomain, "")
-			addSoaRecord(zones[dnsDomain], dnsDomain)
+			log.Debugf("update: creating record map: %s", dnsDomain)
+			records[dnsDomain] = DnsRecords{
+				ARecords:   make(map[string]ARecord),
+				PtrRecords: make(map[string]PtrRecord),
+			}
 		}
 
-		// add client records to zone
-		// todo: if o.config.resolve_client_names...
+		// process client records
 		log.Debugf("update: adding records to zone: %s\n", dnsDomain)
-		_, subnet, _ := net.ParseCIDR(network.Subnet)
+		_, subnet, err := net.ParseCIDR(network.Subnet)
+		if err != nil {
+			log.Debugf("failed to parse network cidr: %v, %v", err, subnet)
+			continue
+		}
 		for _, client := range clients {
 
 			// if client is in this networks subnet then add record to zone
@@ -217,26 +216,99 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				continue
 			}
 			if subnet.Contains(ip) {
-				clientFqdn := fmt.Sprintf("%s.%s", client.DnsName, dnsDomain)
+				dnsName := client.Name
+				if client.Name == client.MAC && client.HostName != "--" {
+					dnsName = client.HostName
+				}
+				clientFqdn := fmt.Sprintf("%s.%s", dnsName, dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: clientFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 					A: net.ParseIP(client.Ip)}
-				zones[dnsDomain].Insert(a)
+				records[dnsDomain].ARecords[clientFqdn] = ARecord{
+					record:    a,
+					timestamp: timestamp,
+				}
+
+				ptrName := getPtrZoneFromIp(client.Ip)
+				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
+					Ptr: dns.Fqdn(clientFqdn)}
+				records[ptrZone].PtrRecords[ptrName] = PtrRecord{
+					record:    ptr,
+					timestamp: timestamp,
+				}
 			}
 		}
 
-		// add device records to zone
+		// process device records
 		for _, device := range devices {
 			ip := net.ParseIP(device.IP)
 			if subnet.Contains(ip) {
 				deviceFqdn := fmt.Sprintf("%s.%s", device.DnsName, dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: deviceFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 					A: net.ParseIP(device.IP)}
-				zones[dnsDomain].Insert(a)
+				records[dnsDomain].ARecords[deviceFqdn] = ARecord{
+					record:    a,
+					timestamp: timestamp,
+				}
+
+				ptrName := getPtrZoneFromIp(device.IP)
+				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
+					Ptr: dns.Fqdn(deviceFqdn)}
+				records[ptrZone].PtrRecords[ptrName] = PtrRecord{
+					record:    ptr,
+					timestamp: timestamp,
+				}
+
 			}
 		}
 
-		log.Debugf("update: zone %s contains %d records", dnsDomain, zones[dnsDomain].Count)
+		// process dhcp reservation records
+		for _, reservation := range reservations {
+			ip := net.ParseIP(reservation.IP)
+			if ip == nil {
+				continue
+			}
+			if subnet.Contains(ip) {
+				dnsName := reservation.ClientName
+				if reservation.ClientName == reservation.Mac && reservation.Description != "" {
+					dnsName = reservation.Description
+				}
+				reservationFqdn := fmt.Sprintf("%s.%s", dnsName, dnsDomain)
+				a := &dns.A{Hdr: dns.RR_Header{Name: reservationFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
+					A: net.ParseIP(reservation.IP)}
+				records[dnsDomain].ARecords[reservationFqdn] = ARecord{
+					record:    a,
+					timestamp: timestamp,
+				}
 
+				ptrName := getPtrZoneFromIp(reservation.IP)
+				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
+					Ptr: dns.Fqdn(reservationFqdn)}
+				records[ptrZone].PtrRecords[ptrName] = PtrRecord{
+					record:    ptr,
+					timestamp: timestamp,
+				}
+			}
+		}
+
+	}
+
+	// add records to zone
+	zones := make(map[string]*file.Zone)
+	for dnsDomain, domainRecords := range records {
+		_, ok := zones[dnsDomain]
+		if !ok {
+			log.Debugf("update: creating zone: %s", dnsDomain)
+			zones[dnsDomain] = file.NewZone(dnsDomain, "")
+			addSoaRecord(zones[dnsDomain], dnsDomain)
+		}
+		domainRecords.purgeStaleRecords(int(o.config.stale_record_duration))
+		for _, v := range domainRecords.ARecords {
+			zones[dnsDomain].Insert(v.record)
+		}
+		for _, v := range domainRecords.PtrRecords {
+			zones[ptrZone].Insert(v.record)
+		}
+		log.Debugf("update: zone %s contains %d records", dnsDomain, zones[dnsDomain].Count)
 	}
 
 	// get list of zone names
@@ -248,6 +320,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	o.zMu.Lock()
 	o.zones = zones
 	o.zoneNames = zoneNames
+	o.records = records
 	o.zMu.Unlock()
 
 	return nil

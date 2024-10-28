@@ -20,6 +20,7 @@ type Omada struct {
 	zoneNames  []string
 	zones      map[string]*file.Zone
 	zMu        sync.RWMutex
+	records    map[string]DnsRecords
 	Next       plugin.Handler
 }
 
@@ -32,10 +33,12 @@ func NewOmada(ctx context.Context, url string, u string, p string) (*Omada, erro
 	}
 
 	zones := make(map[string]*file.Zone)
+	records := make(map[string]DnsRecords)
 
 	return &Omada{
 		controller: omada,
 		zones:      zones,
+		records:    records,
 	}, nil
 }
 

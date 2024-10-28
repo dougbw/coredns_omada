@@ -2,6 +2,7 @@ package coredns_omada
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/coredns/caddy"
 	"github.com/go-playground/validator/v10"
@@ -13,15 +14,12 @@ type config struct {
 	Username       string `validate:"required"`
 	Password       string `validate:"required"`
 
-	refresh_minutes           int  // update dns zones every x minutes
-	refresh_login_hours       int  // login and get a new session token every x hours
-	resolve_clients           bool // resolve 'client' addresses
-	resolve_devices           bool // resolve 'device' addresses
-	resolve_dhcp_reservations bool // resolve static 'dhcp reservations'
-
-	// update_client_names      bool
-	// update_device_names      bool
-	// update_dhcp_reservations bool
+	refresh_minutes           int           // update dns zones every x minutes
+	refresh_login_hours       int           // login and get a new session token every x hours
+	resolve_clients           bool          // resolve 'client' addresses
+	resolve_devices           bool          // resolve 'device' addresses
+	resolve_dhcp_reservations bool          // resolve static 'dhcp reservations'
+	stale_record_duration     time.Duration // resolve static 'dhcp reservations'
 }
 
 func parse(c *caddy.Controller) (config config, err error) {
@@ -31,12 +29,8 @@ func parse(c *caddy.Controller) (config config, err error) {
 	config.refresh_login_hours = 24
 	config.resolve_clients = true
 	config.resolve_devices = true
-	config.resolve_dhcp_reservations = false
-
-	// not yet implemented...
-	// config.overwrite_client_names = false
-	// config.overwrite_device_names = false
-	// config.overwrite_dhcp_reservations = false
+	config.resolve_dhcp_reservations = true
+	config.stale_record_duration, _ = time.ParseDuration("5m")
 
 	for c.Next() {
 
@@ -99,6 +93,24 @@ func parse(c *caddy.Controller) (config config, err error) {
 					return config, c.ArgErr()
 				}
 				config.resolve_devices, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return config, c.ArgErr()
+				}
+
+			case "resolve_dhcp_reservations":
+				if !c.NextArg() {
+					return config, c.ArgErr()
+				}
+				config.resolve_dhcp_reservations, err = strconv.ParseBool(c.Val())
+				if err != nil {
+					return config, c.ArgErr()
+				}
+
+			case "stale_record_duration":
+				if !c.NextArg() {
+					return config, c.ArgErr()
+				}
+				config.stale_record_duration, err = time.ParseDuration(c.Val())
 				if err != nil {
 					return config, c.ArgErr()
 				}

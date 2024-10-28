@@ -115,8 +115,6 @@ func (o *Omada) updateZones(ctx context.Context) error {
 
 	log.Info("update: updating zones...")
 
-	timestamp := time.Now()
-
 	var networks []omada.OmadaNetwork
 	var clients []omada.Client
 	var devices []omada.Device
@@ -133,39 +131,56 @@ func (o *Omada) updateZones(ctx context.Context) error {
 		interfaces := getInterfaces(n)
 		networks = append(networks, interfaces...)
 
-		log.Debugf("update: getting clients for site: %s", s)
-		c, err := o.controller.GetClients()
-		if err != nil {
-			return fmt.Errorf("error getting clients from omada controller: %w", err)
+		if o.config.resolve_clients {
+			log.Debugf("update: getting clients for site: %s", s)
+			c, err := o.controller.GetClients()
+			if err != nil {
+				return fmt.Errorf("error getting clients from omada controller: %w", err)
+			}
+			clients = append(clients, c...)
 		}
-		clients = append(clients, c...)
 
-		log.Debugf("update: getting devices for site: %s", s)
-		d, err := o.controller.GetDevices()
-		if err != nil {
-			return fmt.Errorf("error getting devices from omada controller: %w", err)
+		if o.config.resolve_devices {
+			log.Debugf("update: getting devices for site: %s", s)
+			d, err := o.controller.GetDevices()
+			if err != nil {
+				return fmt.Errorf("error getting devices from omada controller: %w", err)
+			}
+			devices = append(devices, d...)
 		}
-		devices = append(devices, d...)
 
-		log.Debugf("update: getting dhcp reservations for site: %s", s)
-		r, err := o.controller.GetDhcpReservations()
-		if err != nil {
-			return fmt.Errorf("error getting dhcp reservations from omada controller: %w", err)
+		if o.config.resolve_dhcp_reservations {
+			log.Debugf("update: getting dhcp reservations for site: %s", s)
+			r, err := o.controller.GetDhcpReservations()
+			if err != nil {
+				return fmt.Errorf("error getting dhcp reservations from omada controller: %w", err)
+			}
+			reservations = append(reservations, r...)
 		}
-		reservations = append(reservations, r...)
-
 	}
-	log.Debugf("update: found '%d' omada clients\n", len(clients))
-	log.Debugf("update: found '%d' omada devices\n", len(devices))
-	log.Debugf("update: found '%d' omada reservations\n", len(reservations))
+	if o.config.resolve_clients {
+		log.Debugf("update: found '%d' clients\n", len(clients))
+	}
 
-	// process records
-	records := make(map[string]DnsRecords)
+	if o.config.resolve_devices {
+		log.Debugf("update: found '%d' devices\n", len(devices))
+	}
+
+	if o.config.resolve_dhcp_reservations {
+		log.Debugf("update: found '%d' reservations\n", len(reservations))
+	}
+
+	records := o.records
 	ptrZone := "in-addr.arpa."
-	records[ptrZone] = DnsRecords{
-		ARecords:   make(map[string]ARecord),
-		PtrRecords: make(map[string]PtrRecord),
+	_, ok := records[ptrZone]
+	if !ok {
+		records[ptrZone] = DnsRecords{
+			ARecords:   make(map[string]ARecord),
+			PtrRecords: make(map[string]PtrRecord),
+		}
 	}
+
+	timestamp := time.Now()
 	for _, network := range networks {
 		log.Debugf("update: -- processing network: %s", network.Name)
 
@@ -286,7 +301,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 			zones[dnsDomain] = file.NewZone(dnsDomain, "")
 			addSoaRecord(zones[dnsDomain], dnsDomain)
 		}
-		domainRecords.purgeStaleRecords(300)
+		domainRecords.purgeStaleRecords(int(o.config.stale_record_duration))
 		for _, v := range domainRecords.ARecords {
 			zones[dnsDomain].Insert(v.record)
 		}
@@ -305,6 +320,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	o.zMu.Lock()
 	o.zones = zones
 	o.zoneNames = zoneNames
+	o.records = records
 	o.zMu.Unlock()
 
 	return nil

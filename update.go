@@ -47,7 +47,6 @@ func updateZoneLoop(ctx context.Context, o *Omada) {
 
 func updateSessionLoop(ctx context.Context, o *Omada) {
 
-	// delay := 24 * time.Hour
 	delay := time.Duration(o.config.refresh_login_hours) * time.Hour
 	timer := time.NewTimer(delay)
 	defer timer.Stop()
@@ -98,6 +97,12 @@ type DnsRecords struct {
 func (d *DnsRecords) purgeStaleRecords(maxAge int) {
 	now := time.Now()
 	for k, v := range d.ARecords {
+		diff := now.Sub(v.timestamp)
+		if diff.Seconds() > float64(maxAge) {
+			delete(d.ARecords, k)
+		}
+	}
+	for k, v := range d.PtrRecords {
 		diff := now.Sub(v.timestamp)
 		if diff.Seconds() > float64(maxAge) {
 			delete(d.ARecords, k)
@@ -211,7 +216,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				ptrName := getPtrZoneFromIp(client.Ip)
 				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
 					Ptr: dns.Fqdn(clientFqdn)}
-				records[ptrZone].PtrRecords[clientFqdn] = PtrRecord{
+				records[ptrZone].PtrRecords[ptrName] = PtrRecord{
 					record:    ptr,
 					timestamp: timestamp,
 				}
@@ -233,7 +238,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				ptrName := getPtrZoneFromIp(device.IP)
 				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
 					Ptr: dns.Fqdn(deviceFqdn)}
-				records[ptrZone].PtrRecords[deviceFqdn] = PtrRecord{
+				records[ptrZone].PtrRecords[ptrName] = PtrRecord{
 					record:    ptr,
 					timestamp: timestamp,
 				}
@@ -262,7 +267,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 
 				ptrName := getPtrZoneFromIp(reservation.IP)
 				ptr := &dns.PTR{Hdr: dns.RR_Header{Name: ptrName, Rrtype: dns.TypePTR, Class: dns.ClassINET, Ttl: 60},
-					Ptr: dns.Fqdn(ptrName)}
+					Ptr: dns.Fqdn(reservationFqdn)}
 				records[ptrZone].PtrRecords[ptrName] = PtrRecord{
 					record:    ptr,
 					timestamp: timestamp,

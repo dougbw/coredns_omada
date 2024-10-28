@@ -30,7 +30,7 @@ func parse(c *caddy.Controller) (config config, err error) {
 	config.resolve_clients = true
 	config.resolve_devices = true
 	config.resolve_dhcp_reservations = true
-	config.stale_record_duration, _ = time.ParseDuration("15m")
+	config.stale_record_duration, _ = time.ParseDuration("5m")
 
 	for c.Next() {
 

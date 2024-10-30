@@ -66,3 +66,17 @@ func setup(c *caddy.Controller) error {
 	c.OnShutdown(func() error { cancel(); return nil })
 	return nil
 }
+
+func (o *Omada) login(ctx context.Context) error {
+
+	log.Info("logging in...")
+	u := o.config.Username
+	p := o.config.Password
+
+	err := o.controller.Login(u, p)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

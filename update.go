@@ -12,6 +12,21 @@ import (
 	"github.com/miekg/dns"
 )
 
+type ARecord struct {
+	record    *dns.A
+	timestamp time.Time
+}
+
+type PtrRecord struct {
+	record    *dns.PTR
+	timestamp time.Time
+}
+
+type DnsRecords struct {
+	ARecords   map[string]ARecord
+	PtrRecords map[string]PtrRecord
+}
+
 // Run starts the update loops which:
 // - refresh login session token
 // - update the dns zones
@@ -60,52 +75,6 @@ func updateSessionLoop(ctx context.Context, o *Omada) {
 			if err := o.login(ctx); err != nil && ctx.Err() == nil {
 				log.Errorf("Failed to login to controller : %v", err)
 			}
-		}
-	}
-}
-
-// login to the controller
-func (o *Omada) login(ctx context.Context) error {
-
-	log.Info("logging in...")
-	u := o.config.Username
-	p := o.config.Password
-
-	err := o.controller.Login(u, p)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-type ARecord struct {
-	record    *dns.A
-	timestamp time.Time
-}
-
-type PtrRecord struct {
-	record    *dns.PTR
-	timestamp time.Time
-}
-
-type DnsRecords struct {
-	ARecords   map[string]ARecord
-	PtrRecords map[string]PtrRecord
-}
-
-func (d *DnsRecords) purgeStaleRecords(maxAge int) {
-	now := time.Now()
-	for k, v := range d.ARecords {
-		diff := now.Sub(v.timestamp)
-		if diff.Seconds() > float64(maxAge) {
-			delete(d.ARecords, k)
-		}
-	}
-	for k, v := range d.PtrRecords {
-		diff := now.Sub(v.timestamp)
-		if diff.Seconds() > float64(maxAge) {
-			delete(d.ARecords, k)
 		}
 	}
 }
@@ -301,7 +270,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 			zones[dnsDomain] = file.NewZone(dnsDomain, "")
 			addSoaRecord(zones[dnsDomain], dnsDomain)
 		}
-		domainRecords.purgeStaleRecords(int(o.config.stale_record_duration))
+		domainRecords.purgeStaleRecords(o.config.stale_record_duration.Seconds())
 		for _, v := range domainRecords.ARecords {
 			zones[dnsDomain].Insert(v.record)
 		}
@@ -334,4 +303,22 @@ func getInterfaces(networks []omada.OmadaNetwork) (ret []omada.OmadaNetwork) {
 		}
 	}
 	return
+}
+
+func (d *DnsRecords) purgeStaleRecords(maxAgeSeconds float64) {
+	now := time.Now()
+	for k, v := range d.ARecords {
+		diff := now.Sub(v.timestamp)
+		if diff.Seconds() > maxAgeSeconds {
+			delete(d.ARecords, k)
+			log.Debugf("purging stale record: %s", k)
+		}
+	}
+	for k, v := range d.PtrRecords {
+		diff := now.Sub(v.timestamp)
+		if diff.Seconds() > maxAgeSeconds {
+			delete(d.PtrRecords, k)
+			log.Debugf("purging stale record: %s", k)
+		}
+	}
 }

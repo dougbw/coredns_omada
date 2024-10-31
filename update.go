@@ -241,7 +241,7 @@ func (o *Omada) updateZones(ctx context.Context) error {
 				if reservation.ClientName == reservation.Mac && reservation.Description != "" {
 					dnsName = reservation.Description
 				}
-				reservationFqdn := fmt.Sprintf("%s.%s", makeDNSSafe(dnsName), dnsDomain)
+				reservationFqdn := fmt.Sprintf("%s.%s", makeDNSSafeAllowWildcard(dnsName), dnsDomain)
 				a := &dns.A{Hdr: dns.RR_Header{Name: reservationFqdn, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 					A: net.ParseIP(reservation.IP)}
 				records[dnsDomain].ARecords[reservationFqdn] = ARecord{

@@ -15,12 +15,6 @@ import (
 	"github.com/miekg/dns"
 )
 
-var testOmada = Omada{
-	Next:      testHandler(),
-	zoneNames: []string{"omada.test.", "in-addr.arpa."},
-	zones:     testZones(),
-}
-
 func testZones() map[string]*file.Zone {
 
 	dnsDomain := "omada.test."
@@ -73,16 +67,25 @@ func testHandler() test.HandlerFunc {
 	}
 }
 
+type testCases struct {
+	qname        string
+	qtype        uint16
+	wantRetCode  int
+	wantAnswer   []string
+	wantMsgRCode int
+	wantNS       []string
+	expectedErr  error
+}
+
 func TestOmada(t *testing.T) {
-	tests := []struct {
-		qname        string
-		qtype        uint16
-		wantRetCode  int
-		wantAnswer   []string
-		wantMsgRCode int
-		wantNS       []string
-		expectedErr  error
-	}{
+
+	var testOmada = &Omada{
+		Next:      testHandler(),
+		zoneNames: []string{"omada.test.", "in-addr.arpa."},
+		zones:     testZones(),
+	}
+
+	tests := []testCases{
 		{
 			qname:      "client1.omada.test.",
 			qtype:      dns.TypeA,
@@ -106,13 +109,17 @@ func TestOmada(t *testing.T) {
 			wantAnswer: []string{"101.0.168.192.in-addr.arpa.	60	IN	PTR	client1.omada.test."},
 		},
 	}
+	executeTestCases(t, testOmada, tests)
 
-	for ti, tc := range tests {
+}
+
+func executeTestCases(t *testing.T, omada *Omada, testCases []testCases) {
+	for ti, tc := range testCases {
 		req := new(dns.Msg)
 		req.SetQuestion(dns.Fqdn(tc.qname), tc.qtype)
 
 		rec := dnstest.NewRecorder(&test.ResponseWriter{})
-		code, err := testOmada.ServeDNS(context.Background(), rec, req)
+		code, err := omada.ServeDNS(context.Background(), rec, req)
 
 		if err != tc.expectedErr {
 			t.Fatalf("Test %d: Expected error %v, but got %v", ti, tc.expectedErr, err)

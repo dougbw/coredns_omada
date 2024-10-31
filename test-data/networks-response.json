@@ -1,0 +1,208 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "totalRows": 4,
+        "currentPage": 1,
+        "currentSize": 10,
+        "data": [
+            {
+                "id": "5efee9f40e4a4b066b212f89",
+                "site": "Default",
+                "name": "Default",
+                "purpose": "interface",
+                "interfaceIds": [
+                    "3_ebbc880352e440a2a6a67e9db4a35cd0",
+                    "4_368e1eaf2ed44c24ae36874cba3bf652",
+                    "5_443ca53bf9294ed489a1db93535bbcc9",
+                    "6_0535627bfbc143bdaec7e2c941355b73"
+                ],
+                "vlanType": 0,
+                "application": 0,
+                "vlan": 1,
+                "gatewaySubnet": "10.0.0.1/24",
+                "dhcpSettings": {
+                    "enable": true,
+                    "ipaddrStart": "10.0.0.100",
+                    "ipaddrEnd": "10.0.0.199",
+                    "ipRangePool": [
+                        {
+                            "ipaddrStart": "10.0.0.100",
+                            "ipaddrEnd": "10.0.0.199"
+                        }
+                    ],
+                    "ipRangeStart": 167772160,
+                    "ipRangeEnd": 167772415,
+                    "dhcpns": "manual",
+                    "priDns": "8.8.8.8",
+                    "sndDns": "8.8.4.4",
+                    "leasetime": 120,
+                    "options": []
+                },
+                "domain": "omada.home",
+                "igmpSnoopEnable": false,
+                "fastLeaveEnable": false,
+                "mldSnoopEnable": false,
+                "dhcpv6Guard": {
+                    "enable": false
+                },
+                "dhcpL2RelayEnable": false,
+                "dhcpGuard": {
+                    "enable": false
+                },
+                "portal": false,
+                "accessControlRule": true,
+                "rateLimit": false,
+                "lanNetworkIpv6Config": {
+                    "enable": 0
+                },
+                "allLan": false,
+                "origName": "Default",
+                "interface": true,
+                "primary": true
+            },
+            {
+                "id": "65bee8cd86967408e454daac",
+                "site": "Default",
+                "name": "Guest",
+                "purpose": "interface",
+                "interfaceIds": [
+                    "3_ebbc880352e440a2a6a67e9db4a35cd0",
+                    "4_368e1eaf2ed44c24ae36874cba3bf652",
+                    "5_443ca53bf9294ed489a1db93535bbcc9",
+                    "6_0535627bfbc143bdaec7e2c941355b73"
+                ],
+                "vlanType": 0,
+                "application": 0,
+                "vlan": 200,
+                "gatewaySubnet": "10.0.200.1/24",
+                "dhcpSettings": {
+                    "enable": true,
+                    "ipaddrStart": "10.0.200.1",
+                    "ipaddrEnd": "10.0.200.254",
+                    "ipRangePool": [
+                        {
+                            "ipaddrStart": "10.0.200.1",
+                            "ipaddrEnd": "10.0.200.254"
+                        }
+                    ],
+                    "ipRangeStart": 167823360,
+                    "ipRangeEnd": 167823615,
+                    "dhcpns": "auto",
+                    "leasetime": 120
+                },
+                "igmpSnoopEnable": false,
+                "fastLeaveEnable": false,
+                "mldSnoopEnable": false,
+                "dhcpv6Guard": {
+                    "enable": false
+                },
+                "dhcpL2RelayEnable": false,
+                "dhcpGuard": {
+                    "enable": false
+                },
+                "portal": false,
+                "accessControlRule": false,
+                "rateLimit": false,
+                "lanNetworkIpv6Config": {
+                    "enable": 0
+                },
+                "allLan": false,
+                "origName": "Guest",
+                "interface": true,
+                "primary": false
+            },
+            {
+                "id": "66b13848e2f8c96db92bca15",
+                "site": "Default",
+                "name": "Test",
+                "purpose": "vlan",
+                "interfaceIds": [
+                    "3_ebbc880352e440a2a6a67e9db4a35cd0",
+                    "4_368e1eaf2ed44c24ae36874cba3bf652",
+                    "5_443ca53bf9294ed489a1db93535bbcc9",
+                    "6_0535627bfbc143bdaec7e2c941355b73"
+                ],
+                "application": 0,
+                "vlan": 99,
+                "igmpSnoopEnable": false,
+                "fastLeaveEnable": false,
+                "mldSnoopEnable": false,
+                "dhcpv6Guard": {
+                    "enable": false
+                },
+                "dhcpL2RelayEnable": false,
+                "dhcpGuard": {
+                    "enable": false
+                },
+                "portal": false,
+                "accessControlRule": false,
+                "rateLimit": false,
+                "allLan": false,
+                "origName": "Test",
+                "interface": false,
+                "primary": false
+            },
+            {
+                "id": "62238f02dd3c1a436c3e0a64",
+                "site": "Default",
+                "name": "Work",
+                "purpose": "interface",
+                "interfaceIds": [
+                    "4_368e1eaf2ed44c24ae36874cba3bf652",
+                    "5_443ca53bf9294ed489a1db93535bbcc9",
+                    "6_0535627bfbc143bdaec7e2c941355b73"
+                ],
+                "vlanType": 0,
+                "application": 0,
+                "vlan": 100,
+                "gatewaySubnet": "10.0.100.1/24",
+                "dhcpSettings": {
+                    "enable": true,
+                    "ipaddrStart": "10.0.100.1",
+                    "ipaddrEnd": "10.0.100.254",
+                    "ipRangePool": [
+                        {
+                            "ipaddrStart": "10.0.100.1",
+                            "ipaddrEnd": "10.0.100.254"
+                        }
+                    ],
+                    "ipRangeStart": 167797760,
+                    "ipRangeEnd": 167798015,
+                    "dhcpns": "manual",
+                    "priDns": "8.8.8.8",
+                    "sndDns": "8.8.4.4",
+                    "leasetime": 120,
+                    "options": []
+                },
+                "domain": "omada.work",
+                "igmpSnoopEnable": false,
+                "fastLeaveEnable": false,
+                "mldSnoopEnable": false,
+                "dhcpv6Guard": {
+                    "enable": false
+                },
+                "dhcpL2RelayEnable": false,
+                "dhcpGuard": {
+                    "enable": false
+                },
+                "portal": false,
+                "accessControlRule": false,
+                "rateLimit": false,
+                "lanNetworkIpv6Config": {
+                    "enable": 0
+                },
+                "allLan": false,
+                "origName": "Work",
+                "interface": true,
+                "primary": false
+            }
+        ],
+        "supportMultiVlan": true,
+        "supportRA": true,
+        "supportCustomDhcpOption": true,
+        "combinedGateway": false,
+        "dhcpRangePoolSize": 1,
+        "interfaceNum": 128
+    }
+}

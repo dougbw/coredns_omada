@@ -1,0 +1,44 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "totalRows": 3,
+        "currentPage": 1,
+        "currentSize": 10,
+        "data": [
+            {
+                "id": "62077f9a5baa1607f5f7b57e",
+                "description": "access point",
+                "netId": "5efee9f40e4a4b066b212f89",
+                "mac": "AA-BB-CC-0C-8B-C6",
+                "ip": "10.0.0.100",
+                "status": true,
+                "netName": "LAN",
+                "exportToIpMacBinding": true,
+                "clientName": "AA-BB-CC3-0C-8B-C6"
+            },
+            {
+                "id": "63ffd2f03368bd107bb3c1aa",
+                "netId": "5efee9f40e4a4b066b212f89",
+                "mac": "AA-BB-CC-06-54-F2",
+                "ip": "10.0.0.101",
+                "status": true,
+                "netName": "LAN",
+                "exportToIpMacBinding": true,
+                "clientName": "client-01"
+            },
+            {
+                "id": "64cd7607da20d05fc1862cac",
+                "description": "test123",
+                "netId": "5efee9f40e4a4b066b212f89",
+                "mac": "AA-AA-AA-AA-AA-AB",
+                "ip": "10.0.0.248",
+                "status": true,
+                "netName": "LAN",
+                "exportToIpMacBinding": true,
+                "clientName": "AA-AA-AA-AA-AA-AB"
+            }
+        ],
+        "limitEnable": false
+    }
+}

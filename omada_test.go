@@ -18,7 +18,6 @@ import (
 func testZones() map[string]*file.Zone {
 
 	dnsDomain := "omada.test."
-	ptrZone := "in-addr.arpa."
 	testClients := map[string]string{
 		"client1": "192.168.0.101",
 		"client2": "192.168.0.102",
@@ -81,7 +80,7 @@ func TestOmada(t *testing.T) {
 
 	var testOmada = &Omada{
 		Next:      testHandler(),
-		zoneNames: []string{"omada.test.", "in-addr.arpa."},
+		zoneNames: []string{"omada.test.", ptrZone},
 		zones:     testZones(),
 	}
 
@@ -126,6 +125,7 @@ func executeTestCases(t *testing.T, omada *Omada, testCases []testCases) {
 		}
 
 		if code != tc.wantRetCode {
+			fmt.Println(tc)
 			t.Fatalf("Test %d: Expected returned status code %s, but got %s", ti, dns.RcodeToString[tc.wantRetCode], dns.RcodeToString[code])
 		}
 

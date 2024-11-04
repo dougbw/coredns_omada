@@ -19,7 +19,7 @@ type config struct {
 	resolve_clients           bool          // resolve 'client' addresses
 	resolve_devices           bool          // resolve 'device' addresses
 	resolve_dhcp_reservations bool          // resolve static 'dhcp reservations'
-	stale_record_duration     time.Duration // resolve static 'dhcp reservations'
+	stale_record_duration     time.Duration // duration to keep serving stale records for clients no longer present in the controller)
 }
 
 func parse(c *caddy.Controller) (config config, err error) {

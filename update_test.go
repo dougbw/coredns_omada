@@ -117,6 +117,11 @@ func TestUpdate(t *testing.T) {
 			qtype:      dns.TypePTR,
 			wantAnswer: []string{"101.0.0.10.in-addr.arpa.	60	IN	PTR	client-01.omada.home."},
 		},
+		{
+			qname:      "*.omada.home",
+			qtype:      dns.TypeA,
+			wantAnswer: []string{"client-01.omada.home.	60	IN	A	10.0.0.201"},
+		},
 	}
 	executeTestCases(t, testOmada, tests)
 

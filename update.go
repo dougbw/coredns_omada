@@ -89,7 +89,6 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	var devices []omada.Device
 	var reservations []omada.DhcpReservation
 	for _, s := range o.sites {
-		o.controller.SetSite(s)
 
 		log.Debugf("update: getting networks for site: %s", s)
 		o.controller.SetSite(s)
@@ -140,7 +139,6 @@ func (o *Omada) updateZones(ctx context.Context) error {
 	}
 
 	records := o.records
-	ptrZone := "in-addr.arpa."
 	_, ok := records[ptrZone]
 	if !ok {
 		records[ptrZone] = DnsRecords{

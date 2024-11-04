@@ -88,7 +88,7 @@ func TestUpdate(t *testing.T) {
 
 	assert.Len(t, testOmada.zoneNames, 3)
 	assert.Len(t, testOmada.zones, 3)
-	assert.Equal(t, 12, testOmada.zones["omada.home."].Count)
+	assert.Equal(t, 13, testOmada.zones["omada.home."].Count)
 
 	tests := []testCases{
 		{ // foward resolve: client
@@ -117,10 +117,11 @@ func TestUpdate(t *testing.T) {
 			qtype:      dns.TypePTR,
 			wantAnswer: []string{"101.0.0.10.in-addr.arpa.	60	IN	PTR	client-01.omada.home."},
 		},
+		// wildcard dhcp reservation
 		{
-			qname:      "*.omada.home",
+			qname:      "test.kubernetes.omada.home",
 			qtype:      dns.TypeA,
-			wantAnswer: []string{"client-01.omada.home.	60	IN	A	10.0.0.201"},
+			wantAnswer: []string{"test.kubernetes.omada.home.	60	IN	A	10.0.0.150"},
 		},
 	}
 	executeTestCases(t, testOmada, tests)

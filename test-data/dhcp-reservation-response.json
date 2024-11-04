@@ -40,10 +40,10 @@
             },
             {
                 "id": "6787dda8a88f4280b9b3e6cd",
-                "description": "*",
+                "description": "*.kubernetes",
                 "netId": "5efee9f40e4a4b066b212f89",
                 "mac": "AA-AA-AA-AA-AA-AC",
-                "ip": "10.0.0.200",
+                "ip": "10.0.0.150",
                 "status": true,
                 "netName": "LAN",
                 "exportToIpMacBinding": true,

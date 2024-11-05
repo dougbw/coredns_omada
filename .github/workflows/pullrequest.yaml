@@ -20,6 +20,7 @@ jobs:
         with:
           token: ${{ github.token }}
           branch: main
+          patchAll: true
       
       - name: test
         run: echo ${{ steps.semver.outputs.next }}

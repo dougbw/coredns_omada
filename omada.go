@@ -42,6 +42,8 @@ func NewOmada(ctx context.Context, url string, u string, p string) (*Omada, erro
 	}, nil
 }
 
+const ptrZone string = "in-addr.arpa."
+
 // ServeDNS implements the plugin.Handler interface.
 func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
@@ -55,7 +57,7 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	case 1: // A
 		qzone = qname
 	case 12: // PTR
-		qzone = getPtrParent(qname)
+		qzone = ptrZone
 	default:
 		return plugin.NextOrFailure(o.Name(), o.Next, ctx, w, r)
 	}

@@ -1,0 +1,13 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "controllerVer": "5.12.9",
+        "apiVer": "3",
+        "configured": true,
+        "type": 10,
+        "supportApp": true,
+        "omadacId": "123bee230c77bbb45d9c8545d04d700a",
+        "registeredRoot": true
+    }
+}

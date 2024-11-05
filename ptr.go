@@ -1,6 +1,7 @@
 package coredns_omada
 
 import (
+	"fmt"
 	"net"
 	"strings"
 )
@@ -13,15 +14,7 @@ func getPtrZoneFromIp(ip string) string {
 	ipParts := strings.Split(ipAddr.String(), ".")
 	reverseParts := reverseSlice(ipParts)
 	reverse := strings.Join(reverseParts[:], ".")
-	return reverse + ".in-addr.arpa."
-}
-
-// takes an IPv4 address and returns ptr zone:
-// 10.0.0.1 -> 0.0.10.in-addr.arpa.
-func getParentPtrZoneFromIp(ip string) string {
-	ptr := getPtrZoneFromIp(ip)
-	parent := getPtrParent(ptr)
-	return parent
+	return fmt.Sprintf("%s.%s", reverse, ptrZone)
 }
 
 // takes PTR record and returns parent ptr zone:

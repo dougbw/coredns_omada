@@ -1,0 +1,48 @@
+{
+    "errorCode": 0,
+    "msg": "Log in successfully.",
+    "result": {
+        "omadacId": "123bee230c77bbb45d9c8545d04d700a",
+        "roleType": 2,
+        "roleDetail": {
+            "id": "viewer_id",
+            "name": "Viewer",
+            "type": 0,
+            "defaultRole": true,
+            "source": 0,
+            "privilege": {
+                "globalDashboard": 0,
+                "globalMapToken": 1,
+                "dashboard": 1,
+                "devices": 1,
+                "adopt": 0,
+                "globalLog": 0,
+                "log": 1,
+                "license": 0,
+                "licenseBind": 0,
+                "users": 1,
+                "roles": 0,
+                "samlUsers": 0,
+                "samlRoles": 0,
+                "samlSsos": 0,
+                "globalSetting": 0,
+                "exportData": 0,
+                "globalExportData": 0,
+                "exportGlobalLog": 0,
+                "hotspot": 2,
+                "statics": 1,
+                "map": 1,
+                "clients": 1,
+                "insight": 1,
+                "report": 1,
+                "network": 1,
+                "deviceAccount": 0,
+                "anomaly": 0,
+                "analyze": 1,
+                "globalSecurity": 1,
+                "siteAnalyze": 1
+            }
+        },
+        "token": "0000"
+    }
+}

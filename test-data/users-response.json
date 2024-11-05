@@ -1,0 +1,31 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "id": "63d82ec4a66a32734903008b",
+        "type": 0,
+        "roleId": "viewer_id",
+        "roleName": "Viewer",
+        "name": "test-username",
+        "omadacId": "123bee230c77bbb45d9c8545d04d700a",
+        "privilege": {
+            "sites": [
+                {
+                    "name": "Home",
+                    "category": "advanced",
+                    "key": "Default"
+                }
+            ],
+            "lastVisited": "64a86e44da20d05fc182c2db",
+            "lastSiteCategory": "advanced",
+            "all": true
+        },
+        "disaster": 0,
+        "needFeedback": true,
+        "forceModify": false,
+        "dbnormal": true,
+        "view": 0,
+        "root": false,
+        "userLevel": 0
+    }
+}

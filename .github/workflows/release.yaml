@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - 'v*.*.*'
+      - main
     tags:
       - 'v*.*.*'
 

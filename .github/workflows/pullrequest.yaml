@@ -22,5 +22,5 @@ jobs:
           branch: main
           patchAll: true
       
-      - name: test
+      - name: test1
         run: echo ${{ steps.semver.outputs.next }}

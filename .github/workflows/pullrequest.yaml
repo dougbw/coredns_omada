@@ -1,0 +1,60 @@
+name: PullRequest
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+
+permissions: 
+  contents: read
+  
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker meta
+        id: meta_docker
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ghcr.io/dougbw/coredns_omada
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha
+      - name: Docker build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm/v7,linux/arm64
+          push: false
+          tags: ${{ steps.meta_docker.outputs.tags }}
+          labels: ${{ steps.meta_docker.outputs.labels }}
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.x'
+      - name: Install dependencies 
+        run: |
+          go get ./...
+      - name: Run tests
+        run: |
+          go test -v . -coverpkg=./... -cover -coverprofile=coverage.out
+          go tool cover -html=./coverage.out -o coverage.html
+      - id: govulncheck
+        uses: golang/govulncheck-action@v1

@@ -2,6 +2,14 @@
 
 coredns_omada is a [CoreDNS plugin](https://coredns.io/manual/plugins/) which resolves local DNS addresses for clients on TP-Link Omada SDN networks. It uses the omada API to periodically get a list of client addresses.
 
+# Features
+- DHCP client resolution
+- DHCP reservation resolution
+- Device resolution (gateway, switch, access point, etc)
+- Reverse DNS
+- Wildcard records
+- Multiple site support
+
 * [Getting started](docs/getting-started.md)
 * [Configuration](docs/configuration.md)
 * [Building coredns omada](docs/build.md)

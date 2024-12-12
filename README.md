@@ -10,6 +10,8 @@ coredns_omada is a [CoreDNS plugin](https://coredns.io/manual/plugins/) which re
 - Wildcard records
 - Multiple site support
 
+# Docs
+
 * [Getting started](docs/getting-started.md)
 * [Configuration](docs/configuration.md)
 * [Building coredns omada](docs/build.md)

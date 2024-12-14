@@ -9,7 +9,7 @@ CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](bui
 ## 1 - Create Omada user
 
 * Login to Omada controller
-* Go to Admin > Add New Admin
+* Go to Global View > Account (bottom of the left nav bar) -> Add New User
 * Choose "Local User"
 * Role: "Viewer"
 * Site Privileges: "All" or select the individual site

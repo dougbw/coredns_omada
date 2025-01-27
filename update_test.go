@@ -101,6 +101,12 @@ func TestUpdate(t *testing.T) {
 			qtype:      dns.TypeA,
 			wantAnswer: []string{"client-01.omada.home.	60	IN	A	10.0.0.101"},
 		},
+		{ // disabled DHCP reservation
+			qname:        "disabled-dhcp-01.omada.home.",
+			qtype:        dns.TypeA,
+			wantRetCode:  dns.RcodeServerFailure,
+			wantMsgRCode: dns.RcodeServerFailure,
+		},
 		{ // fail: non existent client
 			qname:        "client-002.omada.home.",
 			qtype:        dns.TypeA,

@@ -48,6 +48,17 @@
                 "netName": "LAN",
                 "exportToIpMacBinding": true,
                 "clientName": "AA-AA-AA-AA-AA-AC"
+            },
+            {
+                "id": "31d628d5380540939b05e59a",
+                "description": "disabled-dhcp-01",
+                "netId": "5efee9f40e4a4b066b212f89",
+                "mac": "AA-AA-AA-AA-AA-DF",
+                "ip": "10.0.0.151",
+                "status": false,
+                "netName": "LAN",
+                "exportToIpMacBinding": true,
+                "clientName": "AA-AA-AA-AA-AA-DF"
             }
         ],
         "limitEnable": false

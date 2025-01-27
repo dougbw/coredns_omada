@@ -230,6 +230,9 @@ func (o *Omada) updateZones(ctx context.Context) error {
 
 		// process dhcp reservation records
 		for _, reservation := range reservations {
+			if !reservation.Status {
+				continue
+			}
 			ip := net.ParseIP(reservation.IP)
 			if ip == nil {
 				continue

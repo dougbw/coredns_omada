@@ -9,7 +9,7 @@
 # docker buildx use multiplatform
 # docker buildx inspect --bootstrap
 
-FROM --platform=$BUILDPLATFORM golang:1.21-bookworm as builder
+FROM --platform=$BUILDPLATFORM golang:1.22-bookworm as builder
 ARG TARGETOS TARGETARCH
 RUN apt update
 RUN apt install git curl jq -y

@@ -39,10 +39,14 @@ func setup(c *caddy.Controller) error {
 
 	c.OnShutdown(func() error { cancel(); return nil })
 
-	err = o.startup(ctx)
-	if err != nil {
-		cancel()
-		return plugin.Error("omada", err)
+	if o.config.ignore_startup_errors {
+		go o.startup(ctx)
+	} else {
+		err = o.startup(ctx)
+		if err != nil {
+			cancel()
+			return plugin.Error("omada", err)
+		}
 	}
 
 	// start update loops
@@ -81,9 +85,7 @@ func (o *Omada) startup(ctx context.Context) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				// cancel()
 				return err
-				// return plugin.Error("omada", err)
 			}
 		}
 
@@ -94,8 +96,6 @@ func (o *Omada) startup(ctx context.Context) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				// cancel()
-				// return plugin.Error("omada", err)
 				return err
 			}
 		}
@@ -112,8 +112,6 @@ func (o *Omada) startup(ctx context.Context) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				// cancel()
-				// return plugin.Error("omada", errors.New("no sites found"))
 				return errors.New("no sites found")
 
 			}
@@ -129,8 +127,6 @@ func (o *Omada) startup(ctx context.Context) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				// cancel()
-				// return plugin.Error("omada", err)
 				return err
 			}
 		}

@@ -31,7 +31,6 @@ func setup(c *caddy.Controller) error {
 		return plugin.Error("omada", err)
 	}
 	o.config = config
-	go o.startup(ctx, cancel)
 
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
 		o.Next = next
@@ -39,6 +38,17 @@ func setup(c *caddy.Controller) error {
 	})
 
 	c.OnShutdown(func() error { cancel(); return nil })
+
+	err = o.startup(ctx)
+	if err != nil {
+		cancel()
+		return plugin.Error("omada", err)
+	}
+
+	// start update loops
+	go updateSessionLoop(ctx, o)
+	go updateZoneLoop(ctx, o)
+
 	return nil
 }
 
@@ -56,7 +66,7 @@ func (o *Omada) login(ctx context.Context) error {
 	return nil
 }
 
-func (o *Omada) startup(ctx context.Context, cancel context.CancelFunc) error {
+func (o *Omada) startup(ctx context.Context) error {
 
 	log.Info("starting initial omada setup...")
 
@@ -71,8 +81,9 @@ func (o *Omada) startup(ctx context.Context, cancel context.CancelFunc) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				cancel()
-				return plugin.Error("omada", err)
+				// cancel()
+				return err
+				// return plugin.Error("omada", err)
 			}
 		}
 
@@ -83,8 +94,9 @@ func (o *Omada) startup(ctx context.Context, cancel context.CancelFunc) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				cancel()
-				return plugin.Error("omada", err)
+				// cancel()
+				// return plugin.Error("omada", err)
+				return err
 			}
 		}
 
@@ -100,8 +112,10 @@ func (o *Omada) startup(ctx context.Context, cancel context.CancelFunc) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				cancel()
-				return plugin.Error("omada", errors.New("no sites found"))
+				// cancel()
+				// return plugin.Error("omada", errors.New("no sites found"))
+				return errors.New("no sites found")
+
 			}
 		}
 		log.Infof("found '%d' sites: %v", len(sites), sites)
@@ -115,18 +129,15 @@ func (o *Omada) startup(ctx context.Context, cancel context.CancelFunc) error {
 				time.Sleep(retrySeconds)
 				continue
 			} else {
-				cancel()
-				return plugin.Error("omada", err)
+				// cancel()
+				// return plugin.Error("omada", err)
+				return err
 			}
 		}
 
 		log.Info("initial omada setup complete")
 		break
 	}
-
-	// start update loops
-	go updateSessionLoop(ctx, o)
-	go updateZoneLoop(ctx, o)
 
 	return nil
 

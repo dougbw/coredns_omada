@@ -27,20 +27,7 @@ type DnsRecords struct {
 	PtrRecords map[string]PtrRecord
 }
 
-// Run starts the update loops which:
-// - refresh login session token
-// - update the dns zones
-func (o *Omada) updateLoop(ctx context.Context) error {
-
-	// update zones
-	go updateSessionLoop(ctx, o)
-
-	// update zones
-	go updateZoneLoop(ctx, o)
-
-	return nil
-}
-
+// refresh the DNS zones every X minutes
 func updateZoneLoop(ctx context.Context, o *Omada) {
 
 	delay := time.Duration(o.config.refresh_minutes) * time.Minute
@@ -53,13 +40,14 @@ func updateZoneLoop(ctx context.Context, o *Omada) {
 			log.Debugf("Breaking out of zone update loop: %v", ctx.Err())
 			return
 		case <-timer.C:
-			if err := o.updateZones(ctx); err != nil && ctx.Err() == nil {
+			if err := o.updateZones(); err != nil && ctx.Err() == nil {
 				log.Errorf("Failed to update zones: %v", err)
 			}
 		}
 	}
 }
 
+// refresh the login session token every X hours
 func updateSessionLoop(ctx context.Context, o *Omada) {
 
 	delay := time.Duration(o.config.refresh_login_hours) * time.Hour
@@ -80,7 +68,7 @@ func updateSessionLoop(ctx context.Context, o *Omada) {
 }
 
 // update dns zones
-func (o *Omada) updateZones(ctx context.Context) error {
+func (o *Omada) updateZones() error {
 
 	log.Info("update: updating zones...")
 

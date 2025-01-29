@@ -20,6 +20,7 @@ type config struct {
 	resolve_devices           bool          // resolve 'device' addresses
 	resolve_dhcp_reservations bool          // resolve static 'dhcp reservations'
 	stale_record_duration     time.Duration // duration to keep serving stale records for clients no longer present in the controller)
+	ignore_startup_errors     bool          // ignore any errors during the initial zone refresh
 }
 
 func parse(c *caddy.Controller) (config config, err error) {
@@ -31,6 +32,7 @@ func parse(c *caddy.Controller) (config config, err error) {
 	config.resolve_devices = true
 	config.resolve_dhcp_reservations = true
 	config.stale_record_duration, _ = time.ParseDuration("10m")
+	config.ignore_startup_errors = false
 
 	for c.Next() {
 
@@ -111,6 +113,15 @@ func parse(c *caddy.Controller) (config config, err error) {
 					return config, c.ArgErr()
 				}
 				config.stale_record_duration, err = time.ParseDuration(c.Val())
+				if err != nil {
+					return config, c.ArgErr()
+				}
+
+			case "ignore_startup_errors":
+				if !c.NextArg() {
+					return config, c.ArgErr()
+				}
+				config.ignore_startup_errors, err = strconv.ParseBool(c.Val())
 				if err != nil {
 					return config, c.ArgErr()
 				}

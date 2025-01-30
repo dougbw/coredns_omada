@@ -32,6 +32,16 @@ func setup(c *caddy.Controller) error {
 	}
 	o.config = config
 
+	if o.config.ignore_startup_errors {
+		go o.controllerInit(ctx)
+	} else {
+		err = o.controllerInit(ctx)
+		if err != nil {
+			cancel()
+			return plugin.Error("omada", err)
+		}
+	}
+
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
 		o.Next = next
 		return o
@@ -39,24 +49,10 @@ func setup(c *caddy.Controller) error {
 
 	c.OnShutdown(func() error { cancel(); return nil })
 
-	if o.config.ignore_startup_errors {
-		go o.startup(ctx)
-	} else {
-		err = o.startup(ctx)
-		if err != nil {
-			cancel()
-			return plugin.Error("omada", err)
-		}
-	}
-
-	// start update loops
-	go updateSessionLoop(ctx, o)
-	go updateZoneLoop(ctx, o)
-
 	return nil
 }
 
-func (o *Omada) login(ctx context.Context) error {
+func (o *Omada) login() error {
 
 	log.Info("logging in...")
 	u := o.config.Username
@@ -70,11 +66,12 @@ func (o *Omada) login(ctx context.Context) error {
 	return nil
 }
 
-func (o *Omada) startup(ctx context.Context) error {
+func (o *Omada) controllerInit(ctx context.Context) error {
 
 	log.Info("starting initial omada setup...")
 
-	retrySeconds := 15 * time.Second
+	const retrySeconds = 15
+	duration := time.Duration(retrySeconds) * time.Second
 
 	for {
 
@@ -82,18 +79,18 @@ func (o *Omada) startup(ctx context.Context) error {
 		if err != nil {
 			if o.config.ignore_startup_errors {
 				log.Warning(err)
-				time.Sleep(retrySeconds)
+				time.Sleep(duration)
 				continue
 			} else {
 				return err
 			}
 		}
 
-		err = o.login(ctx)
+		err = o.login()
 		if err != nil {
 			if o.config.ignore_startup_errors {
 				log.Warning(err)
-				time.Sleep(retrySeconds)
+				time.Sleep(duration)
 				continue
 			} else {
 				return err
@@ -109,7 +106,7 @@ func (o *Omada) startup(ctx context.Context) error {
 		if len(sites) == 0 {
 			if o.config.ignore_startup_errors {
 				log.Warning(err)
-				time.Sleep(retrySeconds)
+				time.Sleep(duration)
 				continue
 			} else {
 				return errors.New("no sites found")
@@ -124,7 +121,7 @@ func (o *Omada) startup(ctx context.Context) error {
 		if err != nil {
 			if o.config.ignore_startup_errors {
 				log.Warning(err)
-				time.Sleep(retrySeconds)
+				time.Sleep(duration)
 				continue
 			} else {
 				return err
@@ -134,6 +131,9 @@ func (o *Omada) startup(ctx context.Context) error {
 		log.Info("initial omada setup complete")
 		break
 	}
+
+	go updateSessionLoop(ctx, o)
+	go updateZoneLoop(ctx, o)
 
 	return nil
 

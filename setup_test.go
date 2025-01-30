@@ -35,9 +35,27 @@ func TestSetup(t *testing.T) {
 
 		// invalid config: missing username
 		{`omada {
-			controller_url %s
+			controller_url http://localhost
 			password test
 			site .*
+		}`, true},
+
+		// ignore connection errors to omada controller on startup
+		{`omada {
+			controller_url http://localhost:8888
+			username test
+			password test
+			site .*
+			ignore_startup_errors true
+		}`, false},
+
+		// do not ignore connection errors to omada controller on startup
+		{`omada {
+			controller_url http://localhost:8888
+			username test
+			password test
+			site .*
+			ignore_startup_errors false
 		}`, true},
 	}
 

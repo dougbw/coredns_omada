@@ -60,7 +60,7 @@ func updateSessionLoop(ctx context.Context, o *Omada) {
 			log.Debugf("Breaking out of login update loop: %v", ctx.Err())
 			return
 		case <-timer.C:
-			if err := o.login(ctx); err != nil && ctx.Err() == nil {
+			if err := o.login(); err != nil && ctx.Err() == nil {
 				log.Errorf("Failed to login to controller : %v", err)
 			}
 		}

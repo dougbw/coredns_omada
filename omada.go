@@ -27,10 +27,6 @@ type Omada struct {
 func NewOmada(ctx context.Context, url string, u string, p string) (*Omada, error) {
 
 	omada := omada.New(url)
-	err := omada.GetControllerInfo()
-	if err != nil {
-		return nil, plugin.Error("omada", err)
-	}
 
 	zones := make(map[string]*file.Zone)
 	records := make(map[string]DnsRecords)

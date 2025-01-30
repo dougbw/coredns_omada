@@ -64,10 +64,11 @@ func TestUpdate(t *testing.T) {
 	}
 	testOmada.Next = testHandler()
 
-	err = testOmada.login(context.TODO())
+	err = testOmada.controllerInit(context.TODO())
 	if err != nil {
-		t.Fatalf("test failure on 'TestUpdate/login': %v", err)
+		t.Fatalf("test failure on 'TestUpdate/controllerInit': %v", err)
 	}
+
 	testOmada.config.refresh_minutes = 1
 	testOmada.config.refresh_login_hours = 24
 	testOmada.config.resolve_clients = true
@@ -81,7 +82,7 @@ func TestUpdate(t *testing.T) {
 	testOmada.sites = sites
 	assert.Len(t, testOmada.sites, 1)
 
-	err = testOmada.updateZones(context.TODO())
+	err = testOmada.updateZones()
 	if err != nil {
 		t.Fatalf("test failure on 'TestUpdate/updateZones': %v", err)
 	}

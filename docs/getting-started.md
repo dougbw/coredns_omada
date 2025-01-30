@@ -3,8 +3,8 @@
 CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](build.md) instructions to build the binaries or use the provided docker images.
 
 1. Create Omada user
-2. Run CoreDNS with omada plugin
-3. Setup network
+2. Setup network
+3. Run CoreDNS with omada plugin
 
 ## 1 - Create Omada user
 
@@ -25,7 +25,7 @@ CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](bui
 
 ## 3 - Run CoreDNS with omada plugin
 
-This guide provides three alternatives on how to run CoreDNS:
+This guide provides three options on how to run CoreDNS:
 
 - [CoreDNS binary](#coredns-binary)
 - [Docker container](#docker)
@@ -63,6 +63,7 @@ docker run \
 --env OMADA_SITE="<OMADA_SITE>" \
 --env OMADA_USERNAME="<OMADA_USERNAME>" \
 --env OMADA_PASSWORD="<OMADA_PASSWORD>" \
+--env OMADA_IGNORE_STARTUP_ERRORS="false" \
 --env OMADA_DISABLE_HTTPS_VERIFICATION="false" \
 --env UPSTREAM_DNS="8.8.8.8" \
 ghcr.io/dougbw/coredns_omada:latest
@@ -80,7 +81,7 @@ ghcr.io/dougbw/coredns_omada:latest
 ```
 
 ### Kubernetes
-Some example manifest files to get started are in the [k8s](k8s) directory. Make sure you replace the following values:
+Example manifest files to get started are in the [k8s](k8s) directory. Make sure you replace the following values:
 
 * configmap.yaml
   * `omada-url`

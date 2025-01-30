@@ -17,14 +17,6 @@ func getPtrZoneFromIp(ip string) string {
 	return fmt.Sprintf("%s.%s", reverse, ptrZone)
 }
 
-// takes PTR record and returns parent ptr zone:
-// 1.0.0.10.in-addr.arpa -> 0.0.10.in-addr.arpa
-func getPtrParent(ptr string) string {
-	parts := strings.Split(ptr, ".")
-	zone := strings.Join(parts[1:], ".")
-	return zone
-}
-
 func reverseSlice(s []string) []string {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]

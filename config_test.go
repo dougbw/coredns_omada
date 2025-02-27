@@ -114,6 +114,15 @@ func TestConfig(t *testing.T) {
 			site .*
 			stale_record_duration error
 }`, true},
+
+		// invalid value: ignore_startup_errors
+		{`omada {
+			controller_url https://10.0.0.1
+			username test
+			password test
+			site .*
+			ignore_startup_errors zzz
+}`, true},
 	}
 
 	for i, test := range tests {

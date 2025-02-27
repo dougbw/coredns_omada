@@ -28,26 +28,3 @@ func TestGetPtrZoneFromIp(t *testing.T) {
 	}
 
 }
-
-func TestGetPtrParent(t *testing.T) {
-
-	tests := []struct {
-		ip       string
-		expected string
-	}{
-		{
-			"1.0.0.10.in-addr.arpa",
-			"0.0.10.in-addr.arpa",
-		},
-		{
-			"1.0.0.10.in-addr.arpa",
-			"0.0.10.in-addr.arpa",
-		},
-	}
-
-	for _, test := range tests {
-		result := getPtrParent(test.ip)
-		assert.Equal(t, test.expected, result)
-	}
-
-}

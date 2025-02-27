@@ -19,21 +19,13 @@ ghcr.io/dougbw/coredns_omada:latest
 
 1. Install `Docker` from the Synology Package Center
 
-2. Open File Station in DSM. \
-    You will see a share called `docker` that was created when the Docker plugin was installed.\
-    Under that `docker` share, create a folder called `coredns-omada` and upload or create a `Corefile` (as described elsewhere in the documentation for coredns-omada, no modification to the file is necessary for Synology installs).
+2. You need to pull the container image onto the Synology. Use this guide as a reference: https://www.tobyscott.dev/blog/ghcr-synology-container-manager/
 
-    - <img src="./images/synology/corefile_text.png" alt=“” width="40%" height="40%">
+* `ssh <user>@synologynas`
+* `sudo docker pull ghcr.io/dougbw/coredns_omada:latest`
 
-3. Open the Docker management console (select it from installed packages in the Package Center) and go to the `Registry` tab.  
-	 - Search for the keyword `coredns-omada`
-	 - There should be one result that links to https://registry.hub.docker.com/r/ghcr.io/dougbw/coredns_omada/
-	 - Double click that Image to install and choose `Tag` = `Latest` when prompted. 
-	 - The coredns-omada image should now be available on the Image tab of the Docker management console.
 
-     - <img src="./images/synology/docker_image.png" alt=“” width="40%" height="40%">
-
-4. Double click the coredns-omada Image to create a Docker Container
+3. Double click the coredns-omada Image to create a Docker Container
     - Select the `bridge` network from the Network pane, click Next.
     - <img src="./images/synology/network_pane.png" alt=“” width="40%" height="40%">
     - On the General Settings pane
@@ -47,9 +39,6 @@ ghcr.io/dougbw/coredns_omada:latest
                 - The IP address for the controller should be preceded by `https://`
             - Your Environment Variables screen should look like this once complete:
             - <img src="./images/synology/advanced_settings_env_vars.png" alt=“” width="40%" height="40%">
-            - On the Execution Command tab you'll see that the entrypoint for the Container is already set to `/coredns` and you should add `-conf /etc/coredns/Corefile` to the Command textbox \
-            This `Corefile` is the file that you added to the `docker` share instep #2 above and you will map the file to `/etc/coredns/Corefile` in a subsequent step. 
-            - <img src="./images/synology/advanced_settings_exec_command.png" alt=“” width="40%" height="40%">
             - Save the Advanced Settings and click next on the General Settings pane.
             
 	   

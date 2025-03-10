@@ -38,3 +38,18 @@ HTTPS verification can be disabled by setting environment variable `OMADA_DISABL
 
 An option to keep HTTPS verification enabled is to create a public DNS A record pointing to your controllers private IP address.
 
+## Custom DNS records
+
+It is possible to create a dummy DHCP reservation in the Omada controller to create custom DNS records.
+
+* In the Omada controller go to `Settings` -> `Services` -> `DHCP Reservations`
+* Create a new DHCP reservation:
+    - Enter a dummy MAC address e.g AA-AA-AA-AA-AA-AA
+    - Enter the desired IP address
+    - Enter the client name
+    - (If you are unable to set the client name then use the description - there is a fallback in the code for this and the options seem to vary across controller versions)
+Example:
+
+![image](images/dhcp-reservation.png)
+
+Note that wildcard records are supported by setting the client name to `*` or `*.subdomain`

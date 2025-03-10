@@ -50,4 +50,4 @@ It is possible to create a dummy DHCP reservation in the Omada controller to cre
     - (If you are unable to set the client name then use the description - there is a fallback in the code for this and the options seem to vary across controller versions)
     - Example: ![image](dhcp-reservation.png)
 
-Note that wildcard records are supported by setting the client name to `*` or `*.subdomain`
+Note that wildcard records are supported by setting the client name to `*.<subdomain>` e.g `*.apps`.

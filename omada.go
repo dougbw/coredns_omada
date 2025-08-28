@@ -52,6 +52,8 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	switch qtype {
 	case 1: // A
 		qzone = qname
+	case 6: // SOA
+		qzone = qname
 	case 12: // PTR
 		qzone = ptrZone
 	default:

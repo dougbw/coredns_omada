@@ -107,6 +107,11 @@ func TestOmada(t *testing.T) {
 			qtype:      dns.TypePTR,
 			wantAnswer: []string{"101.0.168.192.in-addr.arpa.	60	IN	PTR	client1.omada.test."},
 		},
+		{
+			qname:      "omada.test.",
+			qtype:      dns.TypeSOA,
+			wantAnswer: []string{"omada.test.	300	IN	SOA	ns.omada.test. hostmaster.omada.test. 1 7200 3600 86400 300"},
+		},
 	}
 	executeTestCases(t, testOmada, tests)
 

@@ -92,7 +92,6 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	case file.Success:
 	case file.NoData:
 	case file.NameError:
-		log.Debugf("-- case: NameError, setting NXDOMAIN\n")
 		m.Rcode = dns.RcodeNameError
 	case file.Delegation:
 		m.Authoritative = false
@@ -100,8 +99,11 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 		log.Debugf("RcodeServerFailure")
 		return dns.RcodeServerFailure, nil
 	}
-	log.Debugf("-- about to write message, rcode: %v\n", m.Rcode)
-	w.WriteMsg(m)
+	err := w.WriteMsg(m)
+	if err != nil {
+		log.Debugf("-- error writing message: %v\n", err)
+		return dns.RcodeServerFailure, err
+	}
 	log.Debugf("-- message written successfully\n")
 	return dns.RcodeSuccess, nil
 }

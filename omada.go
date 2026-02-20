@@ -6,6 +6,7 @@ import (
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/file"
+	"github.com/coredns/coredns/plugin/pkg/fall"
 	"github.com/coredns/coredns/request"
 	omada "github.com/dougbw/go-omada"
 
@@ -22,6 +23,7 @@ type Omada struct {
 	zMu        sync.RWMutex
 	records    map[string]DnsRecords
 	Next       plugin.Handler
+	Fall       fall.F
 }
 
 func NewOmada(ctx context.Context, url string, u string, p string) (*Omada, error) {

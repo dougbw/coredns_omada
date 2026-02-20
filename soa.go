@@ -12,9 +12,9 @@ func addSoaRecord(zone *file.Zone, domain string) {
 		Expire:  uint32(3600),
 		Retry:   uint32(3600),
 		Refresh: uint32(3600),
-		Serial:  uint32(3600),
+		Serial:  uint32(1),
 		Mbox:    dns.Fqdn(domain),
-		Ns:      "127.0.0.1"}
+		Ns:      "omada."}
 	zone.Insert(soa)
 
 }

@@ -82,7 +82,7 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	o.zMu.RUnlock()
 
 	// no answer
-	if len(m.Answer) == 0 && result != file.NoData {
+	if len(m.Answer) == 0 && result != file.NoData && o.Fall.Through(qname) {
 		log.Debugf("-- ❌ answer len: %d, result: %v\n", len(m.Answer), result)
 		return plugin.NextOrFailure(o.Name(), o.Next, ctx, w, r)
 	}
@@ -92,6 +92,7 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	case file.Success:
 	case file.NoData:
 	case file.NameError:
+		log.Debugf("-- case: NameError, setting NXDOMAIN\n")
 		m.Rcode = dns.RcodeNameError
 	case file.Delegation:
 		m.Authoritative = false
@@ -99,8 +100,9 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 		log.Debugf("RcodeServerFailure")
 		return dns.RcodeServerFailure, nil
 	}
-
+	log.Debugf("-- about to write message, rcode: %v\n", m.Rcode)
 	w.WriteMsg(m)
+	log.Debugf("-- message written successfully\n")
 	return dns.RcodeSuccess, nil
 }
 

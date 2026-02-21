@@ -77,8 +77,6 @@ func TestUpdate(t *testing.T) {
 	testOmada.config.resolve_dhcp_reservations = true
 	testOmada.config.stale_record_duration, _ = time.ParseDuration("5m")
 
-	// fallZones := []string{"."}
-	// testOmada.config.fall = &fallZones
 	var fall fall.F
 	fall.SetZonesFromArgs([]string{})
 	testOmada.Fall = fall

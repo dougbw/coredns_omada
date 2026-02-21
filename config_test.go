@@ -22,6 +22,7 @@ func TestConfig(t *testing.T) {
 			resolve_devices true
 			resolve_dhcp_reservations true
 			stale_record_duration 10m
+			fallthrough
 }`, false},
 
 		// missing required property: controller url

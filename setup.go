@@ -77,7 +77,6 @@ func (o *Omada) login() error {
 func (o *Omada) controllerInit(ctx context.Context) error {
 
 	log.Info("starting initial omada setup...")
-	// log.Infof("fallthrough: %v", o.Fall)
 	if o.config.fall == nil {
 		log.Debug("fallthrough disabled")
 	} else {

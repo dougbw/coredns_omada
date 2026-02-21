@@ -14,8 +14,6 @@ import (
 	"github.com/coredns/coredns/request"
 
 	"github.com/miekg/dns"
-
-	clog "github.com/coredns/coredns/plugin/pkg/log"
 )
 
 // Note to enable debug logging for the tests
@@ -135,7 +133,7 @@ func TestOmadaWithFallthrough(t *testing.T) {
 }
 func TestOmadaWithoutFallthrough(t *testing.T) {
 
-	clog.D.Set()
+	// clog.D.Set()
 
 	var f fall.F
 	var testOmada = &Omada{

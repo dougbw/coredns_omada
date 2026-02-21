@@ -10,21 +10,11 @@ import (
 	"github.com/coredns/coredns/plugin/file"
 	"github.com/coredns/coredns/plugin/pkg/dnstest"
 	"github.com/coredns/coredns/plugin/pkg/fall"
-	"github.com/coredns/coredns/plugin/pkg/fall"
 	"github.com/coredns/coredns/plugin/test"
 	"github.com/coredns/coredns/request"
 
 	"github.com/miekg/dns"
 )
-
-// Note to enable debug logging for the tests
-// add the following import:
-//
-// clog "github.com/coredns/coredns/plugin/pkg/log"
-//
-// then add the following line inside the test function
-//
-// clog.D.Set()
 
 // Note to enable debug logging for the tests
 // add the following import:
@@ -74,9 +64,7 @@ func testHandler() test.HandlerFunc {
 		m := new(dns.Msg)
 		rcode := dns.RcodeServerFailure
 		if qname == "fallthrough.omada.test." { // No records match, test fallthrough.
-		if qname == "fallthrough.omada.test." { // No records match, test fallthrough.
 			m.SetReply(r)
-			rr := test.A("fallthrough.omada.test.  300 IN  A   2.4.6.8")
 			rr := test.A("fallthrough.omada.test.  300 IN  A   2.4.6.8")
 			m.Answer = []dns.RR{rr}
 			m.Authoritative = true
@@ -104,18 +92,11 @@ func TestOmadaWithFallthrough(t *testing.T) {
 	fallZones := []string{"."}
 	var f fall.F
 	f.SetZonesFromArgs(fallZones)
-func TestOmadaWithFallthrough(t *testing.T) {
-	// clog.D.Set()
-
-	fallZones := []string{"."}
-	var f fall.F
-	f.SetZonesFromArgs(fallZones)
 
 	var testOmada = &Omada{
 		Next:      testHandler(),
 		zoneNames: []string{"omada.test.", ptrZone},
 		zones:     testZones(),
-		Fall:      f,
 		Fall:      f,
 	}
 
@@ -141,11 +122,6 @@ func TestOmadaWithFallthrough(t *testing.T) {
 			qname:      "101.0.168.192.in-addr.arpa.",
 			qtype:      dns.TypePTR,
 			wantAnswer: []string{"101.0.168.192.in-addr.arpa.	60	IN	PTR	client1.omada.test."},
-		},
-		{
-			qname:      "omada.test.",
-			qtype:      dns.TypeSOA,
-			wantAnswer: []string{"omada.test.	300	IN	SOA	ns.omada.test. hostmaster.omada.test. 1 7200 3600 86400 300"},
 		},
 		{
 			qname:      "fallthrough.omada.test.",

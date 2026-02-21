@@ -9,11 +9,21 @@ import (
 
 	"github.com/coredns/coredns/plugin/file"
 	"github.com/coredns/coredns/plugin/pkg/dnstest"
+	"github.com/coredns/coredns/plugin/pkg/fall"
 	"github.com/coredns/coredns/plugin/test"
 	"github.com/coredns/coredns/request"
 
 	"github.com/miekg/dns"
 )
+
+// Note to enable debug logging for the tests
+// add the following import:
+//
+// clog "github.com/coredns/coredns/plugin/pkg/log"
+//
+// then add the following line inside the test function
+//
+// clog.D.Set()
 
 func testZones() map[string]*file.Zone {
 
@@ -53,9 +63,9 @@ func testHandler() test.HandlerFunc {
 		qname := state.Name()
 		m := new(dns.Msg)
 		rcode := dns.RcodeServerFailure
-		if qname == "example.gov." { // No records match, test fallthrough.
+		if qname == "fallthrough.omada.test." { // No records match, test fallthrough.
 			m.SetReply(r)
-			rr := test.A("example.gov.  300 IN  A   2.4.6.8")
+			rr := test.A("fallthrough.omada.test.  300 IN  A   2.4.6.8")
 			m.Answer = []dns.RR{rr}
 			m.Authoritative = true
 			rcode = dns.RcodeSuccess
@@ -76,12 +86,18 @@ type testCases struct {
 	expectedErr  error
 }
 
-func TestOmada(t *testing.T) {
+func TestOmadaWithFallthrough(t *testing.T) {
+	// clog.D.Set()
+
+	fallZones := []string{"."}
+	var f fall.F
+	f.SetZonesFromArgs(fallZones)
 
 	var testOmada = &Omada{
 		Next:      testHandler(),
 		zoneNames: []string{"omada.test.", ptrZone},
 		zones:     testZones(),
+		Fall:      f,
 	}
 
 	tests := []testCases{
@@ -111,6 +127,46 @@ func TestOmada(t *testing.T) {
 			qname:      "omada.test.",
 			qtype:      dns.TypeSOA,
 			wantAnswer: []string{"omada.test.	300	IN	SOA	ns.omada.test. hostmaster.omada.test. 1 7200 3600 86400 300"},
+		},
+		{
+			qname:      "fallthrough.omada.test.",
+			qtype:      dns.TypeA,
+			wantAnswer: []string{"fallthrough.omada.test.	300	IN	A	2.4.6.8"},
+		},
+	}
+	executeTestCases(t, testOmada, tests)
+}
+func TestOmadaWithoutFallthrough(t *testing.T) {
+
+	// clog.D.Set()
+
+	var f fall.F
+	var testOmada = &Omada{
+		Next:      testHandler(),
+		zoneNames: []string{"omada.test.", ptrZone},
+		zones:     testZones(),
+		Fall:      f,
+	}
+	tests := []testCases{
+		{
+			// expected success, since record exists in zone
+			qname:      "client1.omada.test.",
+			qtype:      dns.TypeA,
+			wantAnswer: []string{"client1.omada.test.	60	IN	A	192.168.0.101"},
+		},
+		{
+			// expected NXDOMAIN, since record does not exist in zone and fallthrough is disabled
+			qname:        "client4.omada.test.",
+			qtype:        dns.TypeA,
+			wantMsgRCode: dns.RcodeNameError,
+			wantNS:       []string{"omada.test.\t300\tIN\tSOA\tns.omada.test. hostmaster.omada.test. 1 7200 3600 86400 300"},
+		},
+		{
+			// expected NXDOMAIN, since record does not exist in zone and fallthrough is disabled
+			qname:        "fallthrough.omada.test.",
+			qtype:        dns.TypeA,
+			wantMsgRCode: dns.RcodeNameError,
+			wantNS:       []string{"omada.test.\t300\tIN\tSOA\tns.omada.test. hostmaster.omada.test. 1 7200 3600 86400 300"},
 		},
 	}
 	executeTestCases(t, testOmada, tests)

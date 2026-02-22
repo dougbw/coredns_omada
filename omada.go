@@ -49,7 +49,7 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	qtype := state.QType()
 	log.Debugf("query; type: %d, name: %s\n", qtype, qname)
 
-	// this plugin can only handle 'A' and 'PTR' queries
+	// this plugin can only handle 'A', 'PTR' and 'SOA' queries
 	var qzone string
 	switch qtype {
 	case 1: // A
@@ -92,19 +92,19 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	case file.Success:
 	case file.NoData:
 	case file.NameError:
+		log.Debugf("--  RcodeNameError")
 		m.Rcode = dns.RcodeNameError
 	case file.Delegation:
 		m.Authoritative = false
 	case file.ServerFailure:
-		log.Debugf("RcodeServerFailure")
+		log.Debugf("--  RcodeServerFailure")
 		return dns.RcodeServerFailure, nil
 	}
 	err := w.WriteMsg(m)
 	if err != nil {
-		log.Debugf("-- error writing message: %v\n", err)
+		log.Debugf("--  error writing message: %v\n", err)
 		return dns.RcodeServerFailure, err
 	}
-	log.Debugf("-- message written successfully\n")
 	return dns.RcodeSuccess, nil
 }
 

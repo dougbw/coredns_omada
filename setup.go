@@ -35,8 +35,8 @@ func setup(c *caddy.Controller) error {
 	var fall fall.F
 
 	// check if fallthrough pointer is nil
-	if o.config.fall != nil {
-		fall.SetZonesFromArgs(*o.config.fall)
+	if o.config.fallthrough_zones != nil {
+		fall.SetZonesFromArgs(*o.config.fallthrough_zones)
 		o.Fall = fall
 	}
 
@@ -77,10 +77,10 @@ func (o *Omada) login() error {
 func (o *Omada) controllerInit(ctx context.Context) error {
 
 	log.Info("starting initial omada setup...")
-	if o.config.fall == nil {
+	if o.config.fallthrough_zones == nil {
 		log.Debug("fallthrough disabled")
 	} else {
-		log.Debug("fallthrough zones are enabled: ", o.Fall.Zones)
+		log.Debug("fallthrough zones: ", o.Fall.Zones)
 	}
 
 	const retrySeconds = 15

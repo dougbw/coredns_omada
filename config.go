@@ -21,7 +21,7 @@ type config struct {
 	resolve_dhcp_reservations bool          // resolve static 'dhcp reservations'
 	stale_record_duration     time.Duration // duration to keep serving stale records for clients no longer present in the controller)
 	ignore_startup_errors     bool          // ignore any errors during the initial zone refresh
-	fall                      *[]string     // fallthrough to the next plugin if no records found for a query
+	fallthrough_zones         *[]string     // list of fallthrough zones
 }
 
 func parse(c *caddy.Controller) (config config, err error) {
@@ -129,7 +129,7 @@ func parse(c *caddy.Controller) (config config, err error) {
 
 			case "fallthrough":
 				fallthroughZones := c.RemainingArgs()
-				config.fall = &fallthroughZones
+				config.fallthrough_zones = &fallthroughZones
 				if err != nil {
 					return config, c.ArgErr()
 				}

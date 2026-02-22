@@ -54,7 +54,7 @@ Note: If you do not have a valid https certificate on your controller then set t
 
 The pre-built images support these optional environment variables:
 * `OMADA_IGNORE_STARTUP_ERRORS` = `true` | `false`
-* `FALLTHROUGH_ZONES` - defaults to a fake zone `disabled` to disable it. Set to `.` to enable fallthrough for all zones.
+* `FALLTHROUGH_ZONES` - defaults to all zones `.` to maintain previous compatibility. To disable fallthrough completely either set this a a fake zone (e.g `FALLTHROUGH_ZONES=disabled`) or mount a custom Corefile.
 
 Note: If you do not have a valid https certificate on your controller then set the `OMADA_DISABLE_HTTPS_VERIFICATION` environment variable to true
 

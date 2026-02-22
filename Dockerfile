@@ -43,5 +43,5 @@ COPY --from=builder /coredns/coredns /coredns
 COPY Corefile /Corefile
 EXPOSE 53 53/udp
 ENV OMADA_IGNORE_STARTUP_ERRORS=FALSE
-ENV FALLTHROUGH_ZONES="disabled"
+ENV FALLTHROUGH_ZONES="."
 ENTRYPOINT ["/coredns"]

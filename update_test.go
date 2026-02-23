@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/coredns/coredns/plugin/pkg/fall"
 	"github.com/miekg/dns"
 	"github.com/stretchr/testify/assert"
 )
@@ -75,6 +76,11 @@ func TestUpdate(t *testing.T) {
 	testOmada.config.resolve_devices = true
 	testOmada.config.resolve_dhcp_reservations = true
 	testOmada.config.stale_record_duration, _ = time.ParseDuration("5m")
+
+	var fall fall.F
+	fall.SetZonesFromArgs([]string{})
+	testOmada.Fall = fall
+
 	var sites []string
 	for s := range testOmada.controller.Sites {
 		sites = append(sites, s)

@@ -7,6 +7,7 @@
         password {$OMADA_PASSWORD}
         refresh_minutes 1
         ignore_startup_errors {$OMADA_IGNORE_STARTUP_ERRORS}
+        fallthrough ${FALLTHROUGH_ZONES}
     }
     forward . {$UPSTREAM_DNS}
 }

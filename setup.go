@@ -8,6 +8,7 @@ import (
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
+	"github.com/coredns/coredns/plugin/pkg/fall"
 	clog "github.com/coredns/coredns/plugin/pkg/log"
 )
 
@@ -31,6 +32,13 @@ func setup(c *caddy.Controller) error {
 		return plugin.Error("omada", err)
 	}
 	o.config = config
+	var fall fall.F
+
+	// check if fallthrough pointer is nil
+	if o.config.fallthrough_zones != nil {
+		fall.SetZonesFromArgs(*o.config.fallthrough_zones)
+		o.Fall = fall
+	}
 
 	if o.config.ignore_startup_errors {
 		go o.controllerInit(ctx)
@@ -69,6 +77,11 @@ func (o *Omada) login() error {
 func (o *Omada) controllerInit(ctx context.Context) error {
 
 	log.Info("starting initial omada setup...")
+	if o.config.fallthrough_zones == nil {
+		log.Debug("fallthrough disabled")
+	} else {
+		log.Debug("fallthrough zones: ", o.Fall.Zones)
+	}
 
 	const retrySeconds = 15
 	duration := time.Duration(retrySeconds) * time.Second

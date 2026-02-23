@@ -9,7 +9,7 @@
 # docker buildx use multiplatform
 # docker buildx inspect --bootstrap
 
-FROM --platform=$BUILDPLATFORM golang:1.24-bookworm as builder
+FROM --platform=$BUILDPLATFORM golang:1.25-bookworm as builder
 ARG TARGETOS TARGETARCH
 RUN apt update
 RUN apt install git curl jq -y
@@ -43,4 +43,5 @@ COPY --from=builder /coredns/coredns /coredns
 COPY Corefile /Corefile
 EXPOSE 53 53/udp
 ENV OMADA_IGNORE_STARTUP_ERRORS=FALSE
+ENV FALLTHROUGH_ZONES="."
 ENTRYPOINT ["/coredns"]

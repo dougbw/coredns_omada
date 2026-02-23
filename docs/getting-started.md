@@ -27,9 +27,9 @@ CoreDNS plugins need to be compiled into CoreDNS, you can follow the [build](bui
 
 This guide provides three options on how to run CoreDNS:
 
-- [CoreDNS binary](#coredns-binary)
-- [Docker container](#docker)
-- [Kubernetes](#kubernetes)
+    - [CoreDNS binary](#coredns-binary)
+    - [Docker](#docker)
+    - [Kubernetes](#kubernetes)
 
 ### CoreDNS binary
 
@@ -52,7 +52,12 @@ Note: If you do not have a valid https certificate on your controller then set t
 * `OMADA_PASSWORD`
 * `UPSTREAM_DNS`
 
+The pre-built images support these optional environment variables:
+* `OMADA_IGNORE_STARTUP_ERRORS` = `true` | `false`
+* `FALLTHROUGH_ZONES` - defaults to all zones `.` to maintain previous compatibility. To disable fallthrough completely either set this a a fake zone (e.g `FALLTHROUGH_ZONES=disabled`) or mount a custom Corefile.
+
 Note: If you do not have a valid https certificate on your controller then set the `OMADA_DISABLE_HTTPS_VERIFICATION` environment variable to true
+
 
 Example docker run command:
 ```

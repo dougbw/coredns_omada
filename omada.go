@@ -6,6 +6,7 @@ import (
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/plugin/file"
+	"github.com/coredns/coredns/plugin/pkg/fall"
 	"github.com/coredns/coredns/request"
 	omada "github.com/dougbw/go-omada"
 
@@ -22,6 +23,7 @@ type Omada struct {
 	zMu        sync.RWMutex
 	records    map[string]DnsRecords
 	Next       plugin.Handler
+	Fall       fall.F
 }
 
 func NewOmada(ctx context.Context, url string, u string, p string) (*Omada, error) {
@@ -47,7 +49,7 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	qtype := state.QType()
 	log.Debugf("query; type: %d, name: %s\n", qtype, qname)
 
-	// this plugin can only handle 'A' and 'PTR' queries
+	// this plugin can only handle 'A', 'PTR' and 'SOA' queries
 	var qzone string
 	switch qtype {
 	case 1: // A
@@ -80,7 +82,7 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	o.zMu.RUnlock()
 
 	// no answer
-	if len(m.Answer) == 0 && result != file.NoData {
+	if len(m.Answer) == 0 && result != file.NoData && o.Fall.Through(qname) {
 		log.Debugf("-- ❌ answer len: %d, result: %v\n", len(m.Answer), result)
 		return plugin.NextOrFailure(o.Name(), o.Next, ctx, w, r)
 	}
@@ -90,15 +92,19 @@ func (o *Omada) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 	case file.Success:
 	case file.NoData:
 	case file.NameError:
+		log.Debugf("--  RcodeNameError")
 		m.Rcode = dns.RcodeNameError
 	case file.Delegation:
 		m.Authoritative = false
 	case file.ServerFailure:
-		log.Debugf("RcodeServerFailure")
+		log.Debugf("--  RcodeServerFailure")
 		return dns.RcodeServerFailure, nil
 	}
-
-	w.WriteMsg(m)
+	err := w.WriteMsg(m)
+	if err != nil {
+		log.Debugf("--  error writing message: %v\n", err)
+		return dns.RcodeServerFailure, err
+	}
 	return dns.RcodeSuccess, nil
 }
 

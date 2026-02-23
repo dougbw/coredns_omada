@@ -78,9 +78,9 @@ func (o *Omada) controllerInit(ctx context.Context) error {
 
 	log.Info("starting initial omada setup...")
 	if o.config.fallthrough_zones == nil {
-		log.Debug("fallthrough disabled")
+		log.Info("fallthrough disabled")
 	} else {
-		log.Debug("fallthrough zones: ", o.Fall.Zones)
+		log.Info("fallthrough zones: ", o.Fall.Zones)
 	}
 
 	const retrySeconds = 15

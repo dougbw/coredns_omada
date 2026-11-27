@@ -124,6 +124,44 @@ func TestConfig(t *testing.T) {
 			site .*
 			ignore_startup_errors zzz
 }`, true},
+
+		// valid: network_domain and default_domain
+		{`omada {
+			controller_url https://10.0.0.1
+			username test
+			password test
+			site .*
+			network_domain Default home.arpa
+			network_domain 10.0.20.0/24 office.home.arpa.
+			default_domain other.home.arpa
+}`, false},
+
+		// invalid value: network_domain missing domain
+		{`omada {
+			controller_url https://10.0.0.1
+			username test
+			password test
+			site .*
+			network_domain Default
+}`, true},
+
+		// invalid value: network_domain bad subnet
+		{`omada {
+			controller_url https://10.0.0.1
+			username test
+			password test
+			site .*
+			network_domain 10.0.20.0/33 home.arpa
+}`, true},
+
+		// invalid value: network_domain bad domain
+		{`omada {
+			controller_url https://10.0.0.1
+			username test
+			password test
+			site .*
+			network_domain Default .
+}`, true},
 	}
 
 	for i, test := range tests {

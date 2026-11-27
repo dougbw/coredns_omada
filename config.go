@@ -14,14 +14,16 @@ type config struct {
 	Username       string `validate:"required"`
 	Password       string `validate:"required"`
 
-	refresh_minutes           int           // update dns zones every x minutes
-	refresh_login_hours       int           // login and get a new session token every x hours
-	resolve_clients           bool          // resolve 'client' addresses
-	resolve_devices           bool          // resolve 'device' addresses
-	resolve_dhcp_reservations bool          // resolve static 'dhcp reservations'
-	stale_record_duration     time.Duration // duration to keep serving stale records for clients no longer present in the controller)
-	ignore_startup_errors     bool          // ignore any errors during the initial zone refresh
-	fallthrough_zones         *[]string     // list of fallthrough zones
+	refresh_minutes           int             // update dns zones every x minutes
+	refresh_login_hours       int             // login and get a new session token every x hours
+	resolve_clients           bool            // resolve 'client' addresses
+	resolve_devices           bool            // resolve 'device' addresses
+	resolve_dhcp_reservations bool            // resolve static 'dhcp reservations'
+	stale_record_duration     time.Duration   // duration to keep serving stale records for clients no longer present in the controller)
+	ignore_startup_errors     bool            // ignore any errors during the initial zone refresh
+	fallthrough_zones         *[]string       // list of fallthrough zones
+	network_domains           []networkDomain // domains for networks with no domain set on the controller
+	default_domain            string          // domain for any other network with no domain set on the controller
 }
 
 func parse(c *caddy.Controller) (config config, err error) {
@@ -131,6 +133,29 @@ func parse(c *caddy.Controller) (config config, err error) {
 				fallthroughZones := c.RemainingArgs()
 				config.fallthrough_zones = &fallthroughZones
 				if err != nil {
+					return config, c.ArgErr()
+				}
+
+			case "network_domain":
+				args := c.RemainingArgs()
+				if len(args) != 2 {
+					return config, c.ArgErr()
+				}
+				nd, err := parseNetworkDomain(args[0], args[1])
+				if err != nil {
+					return config, c.Errf("network_domain: %v", err)
+				}
+				config.network_domains = append(config.network_domains, nd)
+
+			case "default_domain":
+				if !c.NextArg() {
+					return config, c.ArgErr()
+				}
+				config.default_domain, err = parseDomain(c.Val())
+				if err != nil {
+					return config, c.Errf("default_domain: %v", err)
+				}
+				if c.NextArg() {
 					return config, c.ArgErr()
 				}
 

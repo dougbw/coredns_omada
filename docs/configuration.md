@@ -21,6 +21,8 @@ Example corefiles are located [here](../corefile-examples)
 | stale_record_duration     | ❌        | duration | How long to keep serving stale records for clients/devices which are no longer present in the Omada controller. Specified in Go time [duration](https://pkg.go.dev/time#ParseDuration) format |
 | ignore_startup_errors     | ❌        | bool     | ignore connection/configuration errors to the omada controller on startup. Set this to true if you want coredns to startup even if unable to connect to omada (default false)                 |
 | fallthrough [ZONES...]    | ❌        | []string | Whether to enable fallthrough. If fallthrough statement is present but no zone is specified then defaults to all zones, equivilent to:<br> `fallthrough .`                                                                       |
+| network_domain NETWORK DOMAIN | ❌    | string   | DNS domain for a network that has no domain set on the controller. `NETWORK` is the network name or its subnet in CIDR notation. Can be repeated. See [Networks without a domain](#networks-without-a-domain) |
+| default_domain            | ❌        | string   | DNS domain for any other network without a domain (default: unset, those networks are skipped)                                                                                               |
 
 ## Credentials
 
@@ -29,6 +31,17 @@ For this service you should create a new user in the `Admin` page of the control
 ## Omada Site
 
 A single Omada controller can support multiple network sites. This plugin can be configured to use multiple sites via the `site` configuration property (regex). Multiple sites can be specified using the `|` separator like this `SiteA|SiteB|SiteC` or all sites can be selected by setting it to `.*`
+
+## Networks without a domain
+
+Zones are built from the domain set on each LAN network in the controller, and networks without one are skipped. Some controller versions (e.g. Omada 6.3) no longer have a per-network domain setting, so `network_domain` can be used to set it in the Corefile instead:
+
+```
+network_domain Default home.arpa
+network_domain 10.0.20.0/24 office.home.arpa
+```
+
+If `NETWORK` contains a `/` it is matched against the network's subnet, otherwise against its name (case-insensitive). The first matching line wins. `default_domain` covers every remaining network without a domain. A domain set on the controller always takes precedence.
 
 ## Fallthrough behaviour
 

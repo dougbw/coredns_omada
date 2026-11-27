@@ -139,12 +139,13 @@ func (o *Omada) updateZones() error {
 	for _, network := range networks {
 		log.Debugf("update: -- processing network: %s", network.Name)
 
-		// skip network if no dns search domain is set
-		if network.Domain == "" {
-			log.Debugf("update: skipping network: %s because not DNS search domain is set", network.Name)
+		// skip network if no dns domain is set on the controller or in the Corefile
+		domain := o.config.getNetworkDomain(network)
+		if domain == "" {
+			log.Debugf("update: skipping network: %s because no DNS domain is set", network.Name)
 			continue
 		}
-		dnsDomain := network.Domain + "."
+		dnsDomain := domain + "."
 
 		// create record map
 		_, ok := records[dnsDomain]
